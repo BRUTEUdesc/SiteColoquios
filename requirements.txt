@@ -1,0 +1,9 @@
+Flask
+pymongo[srv]
+Flask-PyMongo
+Flask-Cors
+faker
+jupyter
+jupyter-client
+jupyter-console
+jupyter-core

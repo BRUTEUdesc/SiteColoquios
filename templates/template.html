@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head lang="pt">
+        <link rel="stylesheet" href="index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='icons/icon.png') }}" type="image/png">
+        <title>LeaderBoard</title>
+        <link href="{{ url_for('static', filename='bootstrap-5.2.0-beta1/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+  
+    </head>
+    <body>
+      {% block body %}{% endblock %}
+    </body>
+</html>
