@@ -38,3 +38,11 @@ class Oauth:
  
         user_guilds = requests.get(url = url, headers = headers).json()
         return user_guilds
+
+    @staticmethod
+    def get_any_user(user_id):
+        url = f"{Oauth.discord_api_url}/users/{user_id}"
+        headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+ 
+        user_object = requests.get(url = url, headers = headers).json()
+        return user_object

@@ -1,0 +1,127 @@
+{% extends 'template.html' %}
+
+{% block body %}
+<header class="p-3 bg-dark text-white" >
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="/" class="navbar-brand">
+        <img src="{{ url_for('static', filename='icons/icon.png') }}" alt="" width="35" height="35">
+      </a>
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="http://localhost:5000/" class="nav-link px-3 text-secondary">Colóquios</a></li>
+        <li><a href="#" class="nav-link px-3 text-white">Participantes</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="col-md-5 p-lg-1 mx-auto my-5" >
+  <h1 class="display-4 fw-normal text">Participantes 🤓</h1>
+  <p class="lead fw-normal">Uma lista de todos os participantes. Por favor clique no participante para ser redirecionado</p>
+  <form>
+    <div class="row">
+      <div class="col">
+        <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label" required>Nome Completo</label>
+        <input type="email" class="form-control" onchange="validation()" id="nome" placeholder="Nome de Exemplo">
+      </div>
+    </div>
+      <div class="col">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" onchange="validation()" class="form-label">Data de Aniversário</label>
+          <input type="date" class="form-control" id="date" required>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label" required>CPF</label>
+        <input type="email" class="form-control" onchange="validation()" id="cpf" placeholder="000.000.000-00">
+      </div>
+    </div>
+      <div class="col">
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Curso</label>
+          <select class="form-select" aria-label="Default select example">
+            <option selected value="1">Ciência da Computação</option>
+            <option value="2">Eng. Civil</option>
+            <option value="3">Lic. Quí</option>
+            <option value="4">Lic. Fis</option>
+            <option value="5">Lic. Mat</option>
+            <option value="6">Eng. Elétrica</option>
+            <option value="7">Eng. Mecânica</option>
+            <option value="8">Eng. Produção</option>
+            <option value="9">TADS</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <button type="button" id="btnAdicionar" class="btn btn-primary" onclick="adicionar()" disabled>Adicionar participante</button>
+  </form>
+  
+</div>
+
+<div class="col-md-5 p-lg-1 mx-auto my-5">
+  <div class="input-group">
+    <input type="text" class="form-control" placeholder="CPF" aria-label="CPF" aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Pesquisar</button>
+  </div>
+</div>
+
+<div class="col-md-10 mx-auto" onload="loadTable()">
+  
+  <table class="table" id="Coloquios">
+    <thead class="table-dark">
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">Nome Completo</th>
+          <th scope="col">Data Nasc.</th>
+          <th scope="col">CPF</th>
+          <th scope="col">Curso</th>
+        </tr>
+      </thead>
+      <tbody >
+        {% for row in x %}
+            <tr class='clickable-row' data-href='http://localhost:5000/participantes/{{ row["id"] }}'>
+              <td>{{ row["id"] }}</td>
+              <td>{{ row["NomeCompleto"] }}</td>
+              <td>{{ row["DataNasc"] }}</td>
+              <td>{{ row["CPF"] }}</td>
+              <td>{{ row["Curso"] }}</td>
+            </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.open($(this).data("href"), '_blank');
+    });
+  });
+
+  function validation() {
+    var data = document.getElementById("date");
+    var titulo_coloquio = document.getElementById("titulo_coloquio");
+    var button = document.getElementById("btnAdicionar");
+    if(data.value === "" && titulo_coloquio.value.trim() === ""){
+      button.setAttribute('disabled', '');
+      return;
+    }
+    button.removeAttribute('disabled');
+  }
+
+  function adicionar() {
+
+  }
+</script>
+
+{% endblock %}
