@@ -19,17 +19,17 @@
 <div class="col-md-5 p-lg-1 mx-auto my-5" >
   <h1 class="display-4 fw-normal text">Colóquios 🏆</h1>
   <p class="lead fw-normal">Uma lista de todos os colóquios. Por favor clique no colóquio para ser redirecionado</p>
-  <form>
+  <form method="POST">
+    {{ form.csrf_token }}
     <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label" required>Título do colóquio</label>
-      <input type="email" class="form-control" onchange="validation()" id="titulo_coloquio" placeholder="Balões fama e desespero">
+      <label for="exampleFormControlInput1" class="form-label">Título do colóquio</label>
+      {{ form.nome(class_="form-control", placeholder="Balões fama e desespero") }}
     </div>
     <div class="mb-3">
-      <label for="exampleFormControlInput1" onchange="validation()" class="form-label" required>Data</label>
-      <input type="date" class="form-control" id="date">
+      <label for="exampleFormControlInput1" class="form-label">Data</label>
+      {{ form.date(class_="form-control") }}
     </div>
-    
-    <button type="button" id="btnAdicionar" class="btn btn-primary" onclick="adicionar()" disabled>Adicionar colóquio</button>
+    <button type="submit" value="Go" class="btn btn-primary">Adicionar colóquio</button>
   </form>
 </div>
 <div class="col-md-10 mx-auto" onload="loadTable()">

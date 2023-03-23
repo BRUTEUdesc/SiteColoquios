@@ -2,16 +2,26 @@ import json
 import requests
 
 from flask import Flask, jsonify, render_template, request, redirect, session
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, DateField
+from wtforms.validators import DataRequired
+
+class coloquioForm(FlaskForm):
+    nome = StringField('nome', validators=[DataRequired()])
+    date = DateField(validators=[DataRequired()])
+    botao = SubmitField()
+
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
 
 
 @app.route("/")
 def home():
     
     x = [{"id": "1", "titulo_coloquio" : "Pontos flutuantes", "data" : "23/04/2023"}, {"id": "2", "titulo_coloquio" : "AAAAA", "data" : "1/01/2023"},]
-
-    return render_template("index.html", x=x)
+    form = coloquioForm()
+    return render_template("index.html", x=x, form=form)
 
 
 @app.route("/coloquios/<id>")
