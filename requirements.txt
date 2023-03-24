@@ -1,9 +1,7 @@
-Flask
+Flask~=2.2.3
 pymongo[srv]
 Flask-PyMongo
 Flask-Cors
 faker
-jupyter
-jupyter-client
-jupyter-console
-jupyter-core
+psycopg2-binary
+requests~=2.28.2

@@ -22,17 +22,17 @@
   <form method="POST">
     {{ form.csrf_token }}
     <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Título do colóquio</label>
+      <label class="form-label">Título do colóquio</label>
       {{ form.nome(class_="form-control", placeholder="Balões fama e desespero") }}
     </div>
     <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label">Data</label>
+      <label class="form-label">Data</label>
       {{ form.date(class_="form-control") }}
     </div>
     <button type="submit" value="Go" class="btn btn-primary">Adicionar colóquio</button>
   </form>
 </div>
-<div class="col-md-10 mx-auto" onload="loadTable()">
+<div class="col-md-10 mx-auto">
   <table class="table" id="Coloquios">
     <thead class="table-dark">
         <tr>
@@ -42,11 +42,11 @@
         </tr>
       </thead>
       <tbody >
-        {% for row in x %}
+        {% for row in dataTable %}
             <tr class='clickable-row' data-href='http://localhost:5000/coloquios/{{ row["id"] }}'>
-              <td>{{ row["id"] }}</td>
-              <td>{{ row["titulo_coloquio"] }}</td>
-              <td>{{ row["data"] }}</td>
+              {% for v in row %}
+                  <td>{{v}}</td>
+              {% endfor %}
             </tr>
         {% endfor %}
       </tbody>
@@ -62,18 +62,6 @@
         window.open($(this).data("href"), '_blank');
     });
   });
-
-  function validation() {
-    var data = document.getElementById("date");
-    var titulo_coloquio = document.getElementById("titulo_coloquio");
-    var button = document.getElementById("btnAdicionar");
-    if(data.value === "" && titulo_coloquio.value.trim() === ""){
-      button.setAttribute('disabled', '');
-      return;
-    }
-    button.removeAttribute('disabled');
-  }
-
   function adicionar() {
 
   }
