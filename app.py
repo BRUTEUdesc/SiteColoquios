@@ -144,27 +144,35 @@ def participante(cpf):
         con.commit()
         dataRaw = cur.fetchone()
         dataTable = json.dumps(dataRaw, default=default_serializer)
-        form = editParicipanteForm()
         dataTable = json.loads(dataTable)
+        form = None
+        index = 0
+        for i in range(0, 9):
+            if dataRaw[3] == Cursos[i]:
+                index = i+1
 
-        form.cpf.data = dataRaw[4]
+                form = editParicipanteForm(request.form, curso=Cursos[i])
         #form.nome.data = dataRaw[1]
         #form.dateNasc.data = dataRaw[2]
         #form.curso.data = dataRaw[3]
+        form.cpf.data = dataRaw[4]
 
         if form.validate_on_submit():
-            cpf = form.cpf.data
-            nome = form.nome.data
-            date = str(form.dateNasc.data)
-            curso = form.curso.data
-            cur.execute('UPDATE coloquios.participante SET nome = %s,  datanasc = %s, curso = %s WHERE cpf = %s;',
-                        (nome, date, curso, cpf))
-            updated_rows = cur.rowcount
-            print('\n\n\n')
-            print(cur.query)
-            con.commit()
+            if request.form['submit_button'] == 'update':
+                cpf = form.cpf.data
+                nome = form.nome.data
+                date = str(form.dateNasc.data)
+                curso = form.curso.data
+                cur.execute('UPDATE coloquios.participante SET nome = %s,  datanasc = %s, curso = %s WHERE cpf = %s;',
+                            (nome, date, curso, cpf))
+                updated_rows = cur.rowcount
+                print('\n\n\n')
+                print(cur.query)
+                con.commit()
+            elif request.form['submit_button'] == 'delete':
+                print("\n\n\n\naaaaa")
 
-    return render_template("pessoa.html", form=form, x=dataTable)
+    return render_template("pessoa.html", form=form, x=dataTable, dataRaw=dataRaw, index=index)
 
 
 
