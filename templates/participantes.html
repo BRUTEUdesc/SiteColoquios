@@ -35,14 +35,23 @@
         </div>
       </div>
     </div>
-    
     <div class="row">
       <div class="col">
         <div class="mb-3">
         <label class="form-label">CPF</label>
         {{ form.cpf(class_="form-control", placeholder="000.000.000-00") }}
       </div>
+
+    {% if form.cpf.errors %}
+      <ul class="errors">
+      {% for error in form.cpf.errors %}
+          <li class="warning">{{ error }}</li>
+      {% endfor %}
+    </ul>
+{% endif %}
+
     </div>
+
       <div class="col">
         <div class="mb-3">
           <label for="exampleFormControlInput1" class="form-label">Curso</label>
@@ -71,13 +80,13 @@
           <th scope="col">id</th>
           <th scope="col">Nome Completo</th>
           <th scope="col">Data Nasc.</th>
-          <th scope="col">CPF</th>
           <th scope="col">Curso</th>
+          <th scope="col">CPF</th>
         </tr>
       </thead>
       <tbody >
         {% for row in dataTable %}
-            <tr class='clickable-row' data-href='http://localhost:5000/participantes/{{ row["id"] }}'>
+            <tr class='clickable-row' data-href="http://localhost:5000/participantes/{{ row[4]}}">
               {% for v in row %}
                   <td>{{v}}</td>
               {% endfor %}
@@ -96,21 +105,6 @@
         window.open($(this).data("href"), '_blank');
     });
   });
-
-  function validation() {
-    var data = document.getElementById("date");
-    var titulo_coloquio = document.getElementById("titulo_coloquio");
-    var button = document.getElementById("btnAdicionar");
-    if(data.value === "" && titulo_coloquio.value.trim() === ""){
-      button.setAttribute('disabled', '');
-      return;
-    }
-    button.removeAttribute('disabled');
-  }
-
-  function adicionar() {
-
-  }
 </script>
 
 {% endblock %}

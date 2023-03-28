@@ -5,7 +5,7 @@ create table coloquios.participante (
     nome VARCHAR(70),
     dataNasc DATE,
     curso VARCHAR(50),
-    cpf VARCHAR(11)
+    cpf VARCHAR(14)
 );
 
 create table coloquios.apresentacao(
@@ -27,4 +27,3 @@ create table coloquios.palestrante(
     idCol INT,
     FOREIGN KEY (idCol) REFERENCES coloquios.participante(id)
 );
-
