@@ -9,7 +9,7 @@
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-3 text-white">Colóquios</a></li>
+        <li><a href="http://localhost:5000/" class="nav-link px-3 text-white">Colóquios</a></li>
         <li><a href="http://localhost:5000/participantes" class="nav-link px-3 text-secondary">Participantes</a></li>
       </ul>
     </div>
@@ -17,22 +17,46 @@
 </header>
 
 <div class="col-md-5 p-lg-1 mx-auto my-5" >
-  <h1 class="display-4 fw-normal text">{{ titulo_coloquio }}</h1>
+  <h1 class="display-4 fw-normal text">{{ dataColoquio[0][1] }}</h1>
   <p class="lead fw-normal">Uma lista de todos os participantes do colóquio. Por favor clique na pessoa para ser redirecionado para editar</p>
+  <form method="POST">
+    {{ form.csrf_token }}
+    <div class="mb-3">
+      <label class="form-label">Título do colóquio</label>
+      {{ form.nome(class_="form-control", placeholder="Balões fama e desespero", value=dataColoquio[0][1]) }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Data</label>
+      {{ form.date(class_="form-control", value=dataColoquio[0][2]) }}
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="mb-3">
+          <button type="submit" name="submit_button" value="update" class="btn btn-primary">Editar colóquio</button>
+        </div>
+      </div>
+      <div class="col">
+        <div class="mb-3">
+          <button type="submit" name="submit_button" value="delete" class="btn btn-danger">Excluir colóquio</button>
+        </div>
+      </div>
+    </div>
+  </form>
   <form>
     <div class="mb-3">
-      <label for="exampleFormControlInput1" class="form-label" >CPF (somente cadastrados)</label>
+      <label class="form-label" >CPF (somente cadastrados)</label>
       <input type="text" class="form-control" onchange="validation()" id="CPF" placeholder="000.000.000-00" required>
     </div>
     <div class="row mb-3" >
       <div class="col"><button type="button" id="btnAdicionar" class="btn btn-primary" onclick="adicionar()" disabled>Adicionar participante</button></div>
-      <div class="col"><button type="button" id="btnRemover" class="btn btn-danger" onclick="remover()" disabled>Remover participante</button></div>
+      <div class="col"><button type="button" id="btnRemover" class="btn btn-danger" disabled>Remover participante</button></div>
     </div>
     
   </form>
   
-  <div class="mb-3">
-    <button type="button" class="btn btn-success" id="xls">Gerar .xls</button>
+  <div class="row mb-3">
+      <div class="col"><button type="button" id="btnXLS" class="btn btn-success">Gerar .XLS</button></div>
+      <div class="col"><a type="button" href="http://localhost:5000/coloquios/apresentadores/{{ id }}" target="_blank" class="btn btn-info">Apresentadores</a></div>
   </div>
 </div>
 <div class="col-md-10 mx-auto" onload="loadTable()">
@@ -47,13 +71,11 @@
         </tr>
       </thead>
       <tbody >
-        {% for row in x %}
-            <tr class='clickable-row' data-href='http://localhost:5000/participantes/{{ row["id"] }}'>
-              <td>{{ row["id"] }}</td>
-              <td>{{ row["NomeCompleto"] }}</td>
-              <td>{{ row["DataNasc"] }}</td>
-              <td>{{ row["CPF"] }}</td>
-              <td>{{ row["Curso"] }}</td>
+        {% for row in dataTable %}
+            <tr class='clickable-row' data-href="http://localhost:5000/participantes/{{ row[3]}}">
+              {% for v in row %}
+                  <td>{{v}}</td>
+              {% endfor %}
             </tr>
         {% endfor %}
       </tbody>
@@ -69,21 +91,6 @@
         window.open($(this).data("href"), '_blank');
     });
   });
-
-  function validation() {
-    var cpf = document.getElementById("CPF");
-    var titulo_coloquio = document.getElementById("titulo_coloquio");
-    if(cpf.value === ""){
-      button.setAttribute('disabled', '');
-      return;
-    }
-    //TODO
-    //button.removeAttribute('disabled');
-  }
-
-  function adicionar() {
-
-  }
 </script>
 
 {% endblock %}

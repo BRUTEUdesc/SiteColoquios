@@ -84,21 +84,6 @@
             window.open($(this).data("href"), '_blank');
         });
     });
-
-    function validation() {
-        var data = document.getElementById("date");
-        var titulo_coloquio = document.getElementById("titulo_coloquio");
-        var button = document.getElementById("btnAdicionar");
-        if (data.value === "" && titulo_coloquio.value.trim() === "") {
-            button.setAttribute('disabled', '');
-            return;
-        }
-        button.removeAttribute('disabled');
-    }
-
-    function adicionar() {
-
-    }
 </script>
 
 {% endblock %}

@@ -25,5 +25,5 @@ create table coloquios.palestrante(
     idPal INT,
     FOREIGN KEY (idPal) REFERENCES coloquios.participante(id),
     idCol INT,
-    FOREIGN KEY (idCol) REFERENCES coloquios.participante(id)
+    FOREIGN KEY (idCol) REFERENCES coloquios.apresentacao(id)
 );

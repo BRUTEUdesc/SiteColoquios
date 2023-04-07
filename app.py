@@ -1,7 +1,7 @@
 import psycopg2
 import datetime
 import json
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DateField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
@@ -38,9 +38,22 @@ def cpf_validate(numbers):
     return True
 
 
-def cpf_search(cpf):
+def cpf_search(cpf, table):
     with con.cursor() as cur:
-        cur.execute('SELECT cpf FROM coloquios.participante WHERE cpf = %s;', (cpf,))
+        print(table)
+        cur.execute('SELECT cpf FROM %s WHERE cpf = %s;', (table, cpf))
+        con.commit()
+        dataRaw = cur.fetchone()
+        if dataRaw == None:
+            return False
+        return True
+
+
+def cpf_search_join(cpf, table):
+    with con.cursor() as cur:
+        cur.execute('SELECT cpf FROM coloquios.participante participante JOIN %s ba ON participante.id = '
+                    'ba.idpal WHERE participante.cpf = '
+                    '%s;', (table, cpf))
         con.commit()
         dataRaw = cur.fetchone()
         if dataRaw == None:
@@ -59,6 +72,28 @@ class coloquioForm(FlaskForm):
     botao = SubmitField()
 
 
+class editColoquioForm(FlaskForm):
+    nome = StringField('nome', validators=[DataRequired()])
+    date = DateField(validators=[DataRequired()])
+    botao = SubmitField()
+
+
+class adicionarForm(FlaskForm):
+    def validate_cpf(form, field):
+        listcpf = list(field.data)
+        listcpf[3] = ''
+        listcpf[7] = ''
+        listcpf[11] = ''
+        cpf = "".join(listcpf)
+        if not cpf_validate(cpf):
+            raise ValidationError('Campo de CPF inválido')
+        if cpf_search_join(field.data, 'coloquios.palestrante'):
+            raise ValidationError('CPF já cadastrado')
+
+    cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
+    botao = SubmitField()
+
+
 class paricipanteForm(FlaskForm):
     def validate_cpf(form, field):
         listcpf = list(field.data)
@@ -68,7 +103,7 @@ class paricipanteForm(FlaskForm):
         cpf = "".join(listcpf)
         if not cpf_validate(cpf):
             raise ValidationError('Campo de CPF inválido')
-        if cpf_search(field.data):
+        if cpf_search(field.data, 'coloquios.participante'):
             raise ValidationError('CPF já cadastrado')
 
     nome = StringField('nome', validators=[DataRequired()])
@@ -77,12 +112,14 @@ class paricipanteForm(FlaskForm):
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()
 
+
 class editParicipanteForm(FlaskForm):
     nome = StringField('nome', validators=[DataRequired()])
     cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
     curso = SelectField('curso', choices=Cursos)
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
@@ -107,14 +144,6 @@ def home():
     return render_template("index.html", dataTable=dataTable, form=form)
 
 
-@app.route("/coloquios/<id>")
-def coloquios(id):
-    x = [{"id": "1", "NomeCompleto": "Victor Hugo Moresco", "DataNasc": "04/23/2002", "CPF": "000.000.000-00",
-          "Curso": "BCC"}]
-
-    return render_template("coloquio.html", id=id, titulo_coloquio="Pontos flutuantes", x=x)
-
-
 @app.route("/participantes", methods=['GET', 'POST'])
 def participantes():
     with con.cursor() as cur:
@@ -137,11 +166,92 @@ def participantes():
     return render_template("participantes.html", dataTable=dataTable, form=form)
 
 
+@app.route("/coloquios/<id>", methods=['GET', 'POST'])
+def coloquios(id):
+    dataRaw = None
+    with con.cursor() as cur:
+        cur.execute(
+            'SELECT idcol, titulo, datacol, nome, cpf, datanasc FROM coloquios.participante participante JOIN '
+            'coloquios.participacao ba ON participante.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s;',
+            (id,))
+        con.commit()
+        dataColoquio = cur.fetchall()
+
+        cur.execute(
+            'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.participante participante JOIN '
+            'coloquios.participacao ba ON participante.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s;',
+            (id,))
+        con.commit()
+        dataRaw = cur.fetchall()
+
+        dataTable = json.dumps(dataRaw, default=default_serializer)
+        dataTable = json.loads(dataTable)
+        print('\n\n\n')
+        print(dataTable)
+        form = editColoquioForm()
+        if form.validate_on_submit():
+            if request.form['submit_button'] == 'update':
+                titulo = form.nome.data
+                data = form.date.data
+                idcol = dataColoquio[0]
+                cur.execute('update coloquios.apresentacao SET titulo = %s, datacol = %s where '
+                            'coloquios.apresentacao.id = %s', (titulo, data, idcol))
+                con.commit()
+
+    return render_template("coloquio.html", id=id, form=form, dataColoquio=dataColoquio, dataTable=dataTable)
+
+
+@app.route("/coloquios/apresentadores/<id>", methods=['GET', 'POST'])
+def apresentadores(id):
+    dataRaw = None
+    with con.cursor() as cur:
+        cur.execute(
+            'SELECT idcol, titulo, datacol, nome, cpf, datanasc FROM coloquios.participante participante JOIN '
+            'coloquios.palestrante ba ON participante.id = ba.idpal JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s;',
+            (id,))
+        dataColoquio = cur.fetchall()
+
+        cur.execute(
+            'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.participante participante JOIN '
+            'coloquios.participacao ba ON participante.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s;',
+            (id,))
+        con.commit()
+        dataRaw = cur.fetchall()
+
+        dataTable = json.dumps(dataRaw, default=default_serializer)
+        dataTable = json.loads(dataTable)
+        print(dataTable)
+        form = adicionarForm()
+        if form.validate_on_submit():
+            if request.form['submit_button'] == 'add':
+                cpf = form.nome.data
+                idcol = dataColoquio[0]
+                cur.execute('select * from coloquios.participante where coloquios.participante.cpf=%s', (cpf,))
+                pal = cur.fetchone
+                cur.execute('insert into coloquios.palestrante(idpal, idcol) values (%s, %s);', (pal[0], idcol))
+                con.commit()
+                print('\n\n\n')
+                print('---------------------')
+            if request.form['submit_button'] == 'remove':
+                cpf = form.nome.data
+                idcol = dataColoquio[0]
+                cur.execute('select * from coloquios.participante where coloquios.participante.cpf=%s', (cpf,))
+                pal = cur.fetchone
+                cur.execute('delete from coloquios.palestrante where coloquios.palestrante.idpal = %s and '
+                            'coloquios.palestrante.idcol = %s;', (pal[0], idcol))
+                con.commit()
+
+    return render_template("apresentadores.html", id=id, form=form, dataColoquio=dataColoquio, dataTable=dataTable)
+
+
 @app.route("/participantes/<cpf>", methods=['GET', 'POST'])
 def participante(cpf):
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.participante WHERE cpf = %s;', (cpf,))
-        con.commit()
         dataRaw = cur.fetchone()
         dataTable = json.dumps(dataRaw, default=default_serializer)
         dataTable = json.loads(dataTable)
@@ -149,12 +259,12 @@ def participante(cpf):
         index = 0
         for i in range(0, 9):
             if dataRaw[3] == Cursos[i]:
-                index = i+1
+                index = i + 1
 
                 form = editParicipanteForm(request.form, curso=Cursos[i])
-        #form.nome.data = dataRaw[1]
-        #form.dateNasc.data = dataRaw[2]
-        #form.curso.data = dataRaw[3]
+        # form.nome.data = dataRaw[1]
+        # form.dateNasc.data = dataRaw[2]
+        # form.curso.data = dataRaw[3]
         form.cpf.data = dataRaw[4]
 
         if form.validate_on_submit():
@@ -170,10 +280,12 @@ def participante(cpf):
                 print(cur.query)
                 con.commit()
             elif request.form['submit_button'] == 'delete':
-                print("\n\n\n\naaaaa")
+                cpf = form.cpf.data
+                cur.execute('DELETE FROM coloquios.participante Where cpf = %s;', (cpf,))
+                con.commit()
+                return redirect("http://localhost:5000/participantes", code=302)
 
     return render_template("pessoa.html", form=form, x=dataTable, dataRaw=dataRaw, index=index)
-
 
 
 if __name__ == "__main__":

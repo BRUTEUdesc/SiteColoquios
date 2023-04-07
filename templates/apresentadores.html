@@ -9,7 +9,7 @@
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-3 text-white">Colóquios</a></li>
+        <li><a href="http://localhost:5000/" class="nav-link px-3 text-white">Colóquios</a></li>
         <li><a href="http://localhost:5000/participantes" class="nav-link px-3 text-secondary">Participantes</a></li>
       </ul>
     </div>
@@ -17,33 +17,42 @@
 </header>
 
 <div class="col-md-5 p-lg-1 mx-auto my-5" >
-  <h1 class="display-4 fw-normal text">Colóquios 🏆</h1>
-  <p class="lead fw-normal">Uma lista de todos os colóquios. Por favor clique no colóquio para ser redirecionado</p>
+  <h1 class="display-4 fw-normal text">{{ dataColoquio[0][1] }}🚀</h1>
+  <p class="lead fw-normal">Uma lista de todos os apresentadores do colóquio. Por favor clique na pessoa para ser redirecionado para editar</p>
   <form method="POST">
     {{ form.csrf_token }}
     <div class="mb-3">
-      <label class="form-label">Título do colóquio</label>
-      {{ form.nome(class_="form-control", placeholder="Balões fama e desespero") }}
+      <label class="form-label" >CPF (somente cadastrados)</label>
+        {{ form.cpf(class_="form-control", placeholder="000.000.000-00") }}
     </div>
-    <div class="mb-3">
-      <label class="form-label">Data</label>
-      {{ form.date(class_="form-control") }}
+    {% if form.cpf.errors %}
+      <ul class="errors">
+      {% for error in form.cpf.errors %}
+          <li class="warning">{{ error }}</li>
+      {% endfor %}
+    </ul>
+{% endif %}
+    <div class="row mb-3" >
+      <div class="col"><button type="submit" name="submit_button" value="add" class="btn btn-primary">Adicionar apresentador</button></div>
+      <div class="col"><button type="submit" name="submit_button" value="remove" class="btn btn-danger" >Remover remover</button></div>
     </div>
-    <button type="submit" value="Go" class="btn btn-primary">Adicionar colóquio</button>
+
   </form>
 </div>
-<div class="col-md-10 mx-auto">
+<div class="col-md-10 mx-auto" onload="loadTable()">
   <table class="table" id="Coloquios">
     <thead class="table-dark">
         <tr>
           <th scope="col">id</th>
-          <th scope="col">Título do colóquio</th>
-          <th scope="col">Data</th>
+          <th scope="col">Nome Completo</th>
+          <th scope="col">Data Nasc.</th>
+          <th scope="col">CPF</th>
+          <th scope="col">Curso</th>
         </tr>
       </thead>
       <tbody >
         {% for row in dataTable %}
-            <tr class='clickable-row' data-href='http://localhost:5000/coloquios/{{ row[0] }}'>
+            <tr class='clickable-row' data-href="http://localhost:5000/participantes/{{ row[3]}}">
               {% for v in row %}
                   <td>{{v}}</td>
               {% endfor %}
@@ -62,9 +71,6 @@
         window.open($(this).data("href"), '_blank');
     });
   });
-  function adicionar() {
-
-  }
 </script>
 
 {% endblock %}
