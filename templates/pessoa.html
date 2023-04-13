@@ -5,20 +5,24 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="navbar-brand">
-        <img src="{{ url_for('static', filename='icons/icon.png') }}" alt="" width="35" height="35">
+        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt="" width="35" height="35">
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="http://localhost:5000/" class="nav-link px-3 text-secondary">Colóquios</a></li>
-        <li><a href="#" class="nav-link px-3 text-white">Participantes</a></li>
+        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-white">Pessoas</a></li>
       </ul>
+
+      <form class="form-inline my-2 my-lg-0">
+        <a href="http://localhost:5000/logout" class="btn btn-outline-warning my-2 my-sm-0">Logout</a>
+    </form>
     </div>
   </div>
 </header>
 
 <div class="col-md-5 p-lg-1 mx-auto my-5">
   <h1 class="display-4 fw-normal text">{{ x[1] }} 🤓</h1>
-  <p class="lead fw-normal">Todas as informações do participante. Sinta-se a vonte para editalas 😳.</p>
+  <p class="lead fw-normal">Todas as informações da pessoa. Sinta-se a vonte para editalas 😳.</p>
 
   <form method="POST">
     {{ form.csrf_token }}
@@ -61,12 +65,12 @@
     <div class="row">
       <div class="col">
         <div class="mb-3">
-          <button type="submit" name="submit_button" value="update" class="btn btn-primary">Editar participante</button>
+          <button type="submit" name="submit_button" value="update" class="btn btn-primary">Editar pessoa</button>
         </div>
       </div>
       <div class="col">
         <div class="mb-3">
-          <button type="submit" name="submit_button" value="delete" class="btn btn-danger">Excluir participante</button>
+          <button type="submit" name="submit_button" value="delete" class="btn btn-danger">Excluir pessoa</button>
         </div>
       </div>
     </div>

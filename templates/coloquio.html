@@ -5,13 +5,17 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="navbar-brand">
-        <img src="{{ url_for('static', filename='icons/icon.png') }}" alt="" width="35" height="35">
+        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt="" width="35" height="35">
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="http://localhost:5000/" class="nav-link px-3 text-white">Colóquios</a></li>
-        <li><a href="http://localhost:5000/participantes" class="nav-link px-3 text-secondary">Participantes</a></li>
+        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-white">Pessoas</a></li>
       </ul>
+
+      <form class="form-inline my-2 my-lg-0">
+        <a href="http://localhost:5000/logout" class="btn btn-outline-warning my-2 my-sm-0">Logout</a>
+    </form>
     </div>
   </div>
 </header>
@@ -20,7 +24,15 @@
   <h1 class="display-4 fw-normal text">{{ dataColoquio[0][1] }}</h1>
   <p class="lead fw-normal">Uma lista de todos os participantes do colóquio. Por favor clique na pessoa para ser redirecionado para editar</p>
   <form method="POST">
+
     {{ form.csrf_token }}
+
+
+  <div class="row mb-3">
+      <div class="col"><button type="button" id="btnXLS" class="btn btn-success">Gerar .XLS</button></div>
+      <div class="col"><a type="button" href="http://localhost:5000/coloquios/apresentadores/{{ id }}" target="_blank" class="btn btn-info">Apresentadores</a></div>
+      <div class="col"><a type="button" href="http://localhost:5000/coloquios/active/{{ id }}" target="_blank" class="btn btn-warning">Abrir ao publico</a></div>
+  </div>
     <div class="mb-3">
       <label class="form-label">Título do colóquio</label>
       {{ form.nome(class_="form-control", placeholder="Balões fama e desespero", value=dataColoquio[0][1]) }}
@@ -32,7 +44,9 @@
     <div class="row">
       <div class="col">
         <div class="mb-3">
-          <button type="submit" name="submit_button" value="update" class="btn btn-primary">Editar colóquio</button>
+
+          <button type="submit" name="submit_button" value="edit" class="btn btn-primary">Editar colóquio</button>
+
         </div>
       </div>
       <div class="col">
@@ -42,22 +56,30 @@
       </div>
     </div>
   </form>
-  <form>
+  <form method="POST">
+    {{ cpfForm.csrf_token }}
     <div class="mb-3">
       <label class="form-label" >CPF (somente cadastrados)</label>
-      <input type="text" class="form-control" onchange="validation()" id="CPF" placeholder="000.000.000-00" required>
+        {{ cpfForm.cpf(class_="form-control", placeholder="000.000.000-00") }}
     </div>
+
+            {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <ul class=flashes>
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
     <div class="row mb-3" >
-      <div class="col"><button type="button" id="btnAdicionar" class="btn btn-primary" onclick="adicionar()" disabled>Adicionar participante</button></div>
-      <div class="col"><button type="button" id="btnRemover" class="btn btn-danger" disabled>Remover participante</button></div>
+      <div class="col"><button type="submit" name="submit_button" value="add_pessoa" class="btn btn-primary">Adicionar pessoa</button></div>
+      <div class="col"><button type="submit" name="submit_button" value="remove_pessoa" class="btn btn-danger" >Remover pessoa</button></div>
     </div>
-    
+
   </form>
-  
-  <div class="row mb-3">
-      <div class="col"><button type="button" id="btnXLS" class="btn btn-success">Gerar .XLS</button></div>
-      <div class="col"><a type="button" href="http://localhost:5000/coloquios/apresentadores/{{ id }}" target="_blank" class="btn btn-info">Apresentadores</a></div>
-  </div>
+
+
 </div>
 <div class="col-md-10 mx-auto" onload="loadTable()">
   <table class="table" id="Coloquios">
@@ -72,7 +94,7 @@
       </thead>
       <tbody >
         {% for row in dataTable %}
-            <tr class='clickable-row' data-href="http://localhost:5000/participantes/{{ row[3]}}">
+            <tr class='clickable-row' data-href="http://localhost:5000/pessoas/{{ row[3]}}">
               {% for v in row %}
                   <td>{{v}}</td>
               {% endfor %}

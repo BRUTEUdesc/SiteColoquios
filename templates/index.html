@@ -5,14 +5,22 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="navbar-brand">
-        <img src="{{ url_for('static', filename='icons/icon.png') }}" alt="" width="35" height="35">
+        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt="" width="35" height="35">
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="#" class="nav-link px-3 text-white">Colóquios</a></li>
-        <li><a href="http://localhost:5000/participantes" class="nav-link px-3 text-secondary">Participantes</a></li>
+        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-white">Pessoas</a></li>
       </ul>
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 text-end">
+        <li></li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <a href="http://localhost:5000/logout" class="btn btn-outline-warning my-2 my-sm-0">Logout</a>
+    </form>
     </div>
+
   </div>
 </header>
 
@@ -62,9 +70,6 @@
         window.open($(this).data("href"), '_blank');
     });
   });
-  function adicionar() {
-
-  }
 </script>
 
 {% endblock %}

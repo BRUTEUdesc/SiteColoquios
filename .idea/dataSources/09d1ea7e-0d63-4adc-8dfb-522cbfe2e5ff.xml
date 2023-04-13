@@ -3,9 +3,9 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.45">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>976</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1049</IntrospectionStateNumber>
       <ServerVersion>15.2</ServerVersion>
-      <StartupTime>1680727533</StartupTime>
+      <StartupTime>1681391871</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -1395,7 +1395,7 @@ true posixrules
 13186||10|C|G
 13186||-9223372036854775808|U|G
 13186||10|U|G</Grants>
-      <IntrospectionStateNumber>976</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1049</IntrospectionStateNumber>
       <ObjectId>5</ObjectId>
       <OwnerName>postgres</OwnerName>
     </database>
@@ -4795,9 +4795,9 @@ true posixrules
       <ValidatorSchema>pg_catalog</ValidatorSchema>
     </language>
     <schema id="259" parent="2" name="coloquios">
-      <IntrospectionStateNumber>976</IntrospectionStateNumber>
-      <ObjectId>24619</ObjectId>
-      <StateNumber>849</StateNumber>
+      <IntrospectionStateNumber>1049</IntrospectionStateNumber>
+      <ObjectId>24710</ObjectId>
+      <StateNumber>1044</StateNumber>
       <OwnerName>postgres</OwnerName>
     </schema>
     <schema id="260" parent="2" name="information_schema">
@@ -4814,44 +4814,44 @@ true posixrules
     <schema id="262" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>976</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1049</IntrospectionStateNumber>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
     </schema>
     <sequence id="263" parent="259" name="apresentacao_id_seq">
       <DasType>integer|0s</DasType>
-      <ObjectId>24626</ObjectId>
-      <StateNumber>851</StateNumber>
+      <ObjectId>24717</ObjectId>
+      <StateNumber>1046</StateNumber>
       <OwnerName>postgres</OwnerName>
     </sequence>
-    <sequence id="264" parent="259" name="participante_id_seq">
+    <sequence id="264" parent="259" name="pessoa_id_seq">
       <DasType>integer|0s</DasType>
-      <ObjectId>24620</ObjectId>
-      <StateNumber>850</StateNumber>
+      <ObjectId>24711</ObjectId>
+      <StateNumber>1045</StateNumber>
       <OwnerName>postgres</OwnerName>
     </sequence>
     <table id="265" parent="259" name="apresentacao">
-      <ObjectId>24627</ObjectId>
-      <StateNumber>852</StateNumber>
+      <ObjectId>24718</ObjectId>
+      <StateNumber>1047</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
     <table id="266" parent="259" name="palestrante">
-      <ObjectId>24658</ObjectId>
-      <StateNumber>975</StateNumber>
+      <ObjectId>24736</ObjectId>
+      <StateNumber>1048</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="267" parent="259" name="participacao">
-      <ObjectId>24632</ObjectId>
-      <StateNumber>852</StateNumber>
+    <table id="267" parent="259" name="participante">
+      <ObjectId>24723</ObjectId>
+      <StateNumber>1047</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
-    <table id="268" parent="259" name="participante">
-      <ObjectId>24621</ObjectId>
-      <StateNumber>852</StateNumber>
+    <table id="268" parent="259" name="pessoa">
+      <ObjectId>24712</ObjectId>
+      <StateNumber>1047</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>postgres</OwnerName>
     </table>
@@ -4860,103 +4860,103 @@ true posixrules
       <IdentityKind>always</IdentityKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>851</StateNumber>
-      <SequenceId>24626</SequenceId>
+      <StateNumber>1046</StateNumber>
+      <SequenceId>24717</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="270" parent="265" name="titulo">
       <DasType>varchar(100)|0s</DasType>
       <Position>2</Position>
-      <StateNumber>851</StateNumber>
+      <StateNumber>1046</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="271" parent="265" name="datacol">
       <DasType>date|0s</DasType>
       <Position>3</Position>
-      <StateNumber>851</StateNumber>
+      <StateNumber>1046</StateNumber>
       <TypeId>1082</TypeId>
     </column>
     <index id="272" parent="265" name="apresentacao_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24630</ObjectId>
+      <ObjectId>24721</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>851</StateNumber>
+      <StateNumber>1046</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
     <key id="273" parent="265" name="apresentacao_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24631</ObjectId>
+      <ObjectId>24722</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>851</StateNumber>
-      <UnderlyingIndexId>24630</UnderlyingIndexId>
+      <StateNumber>1046</StateNumber>
+      <UnderlyingIndexId>24721</UnderlyingIndexId>
     </key>
     <column id="274" parent="266" name="idpal">
       <DasType>integer|0s</DasType>
       <Position>1</Position>
-      <StateNumber>975</StateNumber>
+      <StateNumber>1048</StateNumber>
       <TypeId>23</TypeId>
     </column>
     <column id="275" parent="266" name="idcol">
       <DasType>integer|0s</DasType>
       <Position>2</Position>
-      <StateNumber>975</StateNumber>
+      <StateNumber>1048</StateNumber>
       <TypeId>23</TypeId>
     </column>
     <foreign-key id="276" parent="266" name="palestrante_idpal_fkey">
       <ColNames>idpal</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24661</ObjectId>
+      <ObjectId>24739</ObjectId>
       <RefColNames>id</RefColNames>
       <RefColPositions>1</RefColPositions>
-      <StateNumber>975</StateNumber>
-      <RefTableId>24621</RefTableId>
-      <RefTableName>participante</RefTableName>
+      <StateNumber>1048</StateNumber>
+      <RefTableId>24712</RefTableId>
+      <RefTableName>pessoa</RefTableName>
       <RefTableKind>table</RefTableKind>
     </foreign-key>
     <foreign-key id="277" parent="266" name="palestrante_idcol_fkey">
       <ColNames>idcol</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24666</ObjectId>
+      <ObjectId>24744</ObjectId>
       <RefColNames>id</RefColNames>
       <RefColPositions>1</RefColPositions>
-      <StateNumber>975</StateNumber>
-      <RefTableId>24627</RefTableId>
+      <StateNumber>1048</StateNumber>
+      <RefTableId>24718</RefTableId>
       <RefTableName>apresentacao</RefTableName>
       <RefTableKind>table</RefTableKind>
     </foreign-key>
     <column id="278" parent="267" name="idpar">
       <DasType>integer|0s</DasType>
       <Position>1</Position>
-      <StateNumber>852</StateNumber>
+      <StateNumber>1047</StateNumber>
       <TypeId>23</TypeId>
     </column>
     <column id="279" parent="267" name="idcol">
       <DasType>integer|0s</DasType>
       <Position>2</Position>
-      <StateNumber>852</StateNumber>
+      <StateNumber>1047</StateNumber>
       <TypeId>23</TypeId>
     </column>
-    <foreign-key id="280" parent="267" name="participacao_idpar_fkey">
+    <foreign-key id="280" parent="267" name="participante_idpar_fkey">
       <ColNames>idpar</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24635</ObjectId>
+      <ObjectId>24726</ObjectId>
       <RefColNames>id</RefColNames>
       <RefColPositions>1</RefColPositions>
-      <StateNumber>852</StateNumber>
-      <RefTableId>24621</RefTableId>
-      <RefTableName>participante</RefTableName>
+      <StateNumber>1047</StateNumber>
+      <RefTableId>24712</RefTableId>
+      <RefTableName>pessoa</RefTableName>
       <RefTableKind>table</RefTableKind>
     </foreign-key>
-    <foreign-key id="281" parent="267" name="participacao_idcol_fkey">
+    <foreign-key id="281" parent="267" name="participante_idcol_fkey">
       <ColNames>idcol</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24640</ObjectId>
+      <ObjectId>24731</ObjectId>
       <RefColNames>id</RefColNames>
       <RefColPositions>1</RefColPositions>
-      <StateNumber>852</StateNumber>
-      <RefTableId>24627</RefTableId>
+      <StateNumber>1047</StateNumber>
+      <RefTableId>24718</RefTableId>
       <RefTableName>apresentacao</RefTableName>
       <RefTableKind>table</RefTableKind>
     </foreign-key>
@@ -4965,49 +4965,49 @@ true posixrules
       <IdentityKind>always</IdentityKind>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>850</StateNumber>
-      <SequenceId>24620</SequenceId>
+      <StateNumber>1045</StateNumber>
+      <SequenceId>24711</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="283" parent="268" name="nome">
       <DasType>varchar(70)|0s</DasType>
       <Position>2</Position>
-      <StateNumber>850</StateNumber>
+      <StateNumber>1045</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="284" parent="268" name="datanasc">
       <DasType>date|0s</DasType>
       <Position>3</Position>
-      <StateNumber>850</StateNumber>
+      <StateNumber>1045</StateNumber>
       <TypeId>1082</TypeId>
     </column>
     <column id="285" parent="268" name="curso">
       <DasType>varchar(50)|0s</DasType>
       <Position>4</Position>
-      <StateNumber>850</StateNumber>
+      <StateNumber>1045</StateNumber>
       <TypeId>1043</TypeId>
     </column>
     <column id="286" parent="268" name="cpf">
       <DasType>varchar(14)|0s</DasType>
       <Position>5</Position>
-      <StateNumber>850</StateNumber>
+      <StateNumber>1045</StateNumber>
       <TypeId>1043</TypeId>
     </column>
-    <index id="287" parent="268" name="participante_pkey">
+    <index id="287" parent="268" name="pessoa_pkey">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24624</ObjectId>
+      <ObjectId>24715</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>850</StateNumber>
+      <StateNumber>1045</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="288" parent="268" name="participante_pkey">
+    <key id="288" parent="268" name="pessoa_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>24625</ObjectId>
+      <ObjectId>24716</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>850</StateNumber>
-      <UnderlyingIndexId>24624</UnderlyingIndexId>
+      <StateNumber>1045</StateNumber>
+      <UnderlyingIndexId>24715</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

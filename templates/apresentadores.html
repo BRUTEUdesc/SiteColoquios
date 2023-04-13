@@ -5,19 +5,24 @@
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <a href="/" class="navbar-brand">
-        <img src="{{ url_for('static', filename='icons/icon.png') }}" alt="" width="35" height="35">
+        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt="" width="35" height="35">
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="http://localhost:5000/" class="nav-link px-3 text-white">Colóquios</a></li>
-        <li><a href="http://localhost:5000/participantes" class="nav-link px-3 text-secondary">Participantes</a></li>
+        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-white">Pessoas</a></li>
       </ul>
+
+      <form class="form-inline my-2 my-lg-0">
+        <a href="http://localhost:5000/logout" class="btn btn-outline-warning my-2 my-sm-0">Logout</a>
+    </form>
     </div>
+
   </div>
 </header>
 
 <div class="col-md-5 p-lg-1 mx-auto my-5" >
-  <h1 class="display-4 fw-normal text">{{ dataColoquio[0][1] }}🚀</h1>
+  <h1 class="display-4 fw-normal text">{{ dataColoquio[1] }}🚀</h1>
   <p class="lead fw-normal">Uma lista de todos os apresentadores do colóquio. Por favor clique na pessoa para ser redirecionado para editar</p>
   <form method="POST">
     {{ form.csrf_token }}
@@ -25,16 +30,18 @@
       <label class="form-label" >CPF (somente cadastrados)</label>
         {{ form.cpf(class_="form-control", placeholder="000.000.000-00") }}
     </div>
-    {% if form.cpf.errors %}
-      <ul class="errors">
-      {% for error in form.cpf.errors %}
-          <li class="warning">{{ error }}</li>
-      {% endfor %}
-    </ul>
-{% endif %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
     <div class="row mb-3" >
       <div class="col"><button type="submit" name="submit_button" value="add" class="btn btn-primary">Adicionar apresentador</button></div>
-      <div class="col"><button type="submit" name="submit_button" value="remove" class="btn btn-danger" >Remover remover</button></div>
+      <div class="col"><button type="submit" name="submit_button" value="remove" class="btn btn-danger" >Remover apresentador</button></div>
     </div>
 
   </form>
@@ -52,7 +59,7 @@
       </thead>
       <tbody >
         {% for row in dataTable %}
-            <tr class='clickable-row' data-href="http://localhost:5000/participantes/{{ row[3]}}">
+            <tr class='clickable-row' data-href="http://localhost:5000/pessoas/{{ row[4]}}">
               {% for v in row %}
                   <td>{{v}}</td>
               {% endfor %}
