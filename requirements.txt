@@ -4,5 +4,7 @@ Flask-PyMongo
 Flask-Cors
 flask-login
 faker
+XlsxWriter
+pandas
 psycopg2-binary
 requests~=2.28.2

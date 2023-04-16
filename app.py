@@ -2,12 +2,14 @@ import datetime
 import json
 import flask_login
 import flask
+import xlsxwriter
 from hashlib import sha256
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, send_file, make_response
 from connector import con, Cursos
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, LoginForm, \
     default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
+from generateXLS import generate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
@@ -177,7 +179,7 @@ def pessoas():
                 flash('CPF já cadastrado')
             else:
                 cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
-                        (nome, date, curso, cpf))
+                            (nome, date, curso, cpf))
                 con.commit()
             return redirect("/pessoas")
     # print(dataTable[0].cpf)
@@ -222,7 +224,7 @@ def coloquios(id):
                 con.commit()
                 return redirect("/")
         idpar = None
-        error= None
+        error = None
 
         if cpfForm.validate_on_submit():
             if request.form['submit_button'] == 'add_pessoa':
@@ -266,6 +268,12 @@ def coloquios(id):
                            cpfForm=cpfForm, error=error)
 
 
+@app.route("/coloquios/download/<id>", methods=['GET', 'POST'])
+@flask_login.login_required
+def download(id):
+    return generate(id)
+
+
 @app.route("/coloquios/apresentadores/<id>", methods=['GET', 'POST'])
 @flask_login.login_required
 def apresentadores(id):
@@ -300,7 +308,7 @@ def apresentadores(id):
                             (id, pal[0]))
                 con.commit()
                 cadastrado = cur.fetchone()
-                if cpf_search_palestrante(cpf):
+                if cpf_search_palestrante(cpf, id):
                     flash('CPF já cadastrado como palestrante')
                 elif not cpf_search(cpf):
                     flash('CPF não cadastrado')
@@ -317,7 +325,7 @@ def apresentadores(id):
                     return redirect("/coloquios/apresentadores/" + id)
             if request.form['submit_button'] == 'remove':
                 cpf = form.cpf.data
-                if not cpf_search_palestrante(cpf):
+                if not cpf_search_palestrante(cpf, id):
                     flash('CPF não cadastrado')
                 else:
                     cpf = form.cpf.data

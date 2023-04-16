@@ -10,7 +10,7 @@
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="http://localhost:5000/" class="nav-link px-3 text-white">Colóquios</a></li>
-        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-white">Pessoas</a></li>
+        <li><a href="http://localhost:5000/pessoas" class="nav-link px-3 text-secondary">Pessoas</a></li>
       </ul>
 
       <form class="form-inline my-2 my-lg-0">
@@ -29,7 +29,7 @@
 
 
   <div class="row mb-3">
-      <div class="col"><button type="button" id="btnXLS" class="btn btn-success">Gerar .XLS</button></div>
+      <div class="col"><a type="button" href="http://localhost:5000/coloquios/download/{{ id }}" class="btn btn-success">Gerar .XLS</a></div>
       <div class="col"><a type="button" href="http://localhost:5000/coloquios/apresentadores/{{ id }}" target="_blank" class="btn btn-info">Apresentadores</a></div>
       <div class="col"><a type="button" href="http://localhost:5000/coloquios/active/{{ id }}" target="_blank" class="btn btn-warning">Abrir ao publico</a></div>
   </div>
@@ -45,7 +45,7 @@
       <div class="col">
         <div class="mb-3">
 
-          <button type="submit" name="submit_button" value="edit" class="btn btn-primary">Editar colóquio</button>
+          <button type="submit" name="submit_button" value="update" class="btn btn-primary">Editar colóquio</button>
 
         </div>
       </div>

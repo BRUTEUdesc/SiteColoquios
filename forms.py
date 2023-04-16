@@ -40,12 +40,12 @@ def cpf_search(cpf):
         return True
 
 
-def cpf_search_palestrante(cpf):
+def cpf_search_palestrante(cpf, id):
     with con.cursor() as cur:
         cur.execute(
             'SELECT cpf FROM coloquios.pessoa pessoa JOIN coloquios.palestrante ba ON pessoa.id = '
             'ba.idpal WHERE pessoa.cpf = '
-            '%s;', (cpf,))
+            '%s and ba.idcol = %s;', (cpf, id))
         con.commit()
         dataRaw = cur.fetchone()
         if dataRaw == None:
