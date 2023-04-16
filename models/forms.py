@@ -1,11 +1,10 @@
 import datetime
 
-from flask import flash
 from wtforms import StringField, SubmitField, DateField, SelectField, PasswordField
-from wtforms.validators import DataRequired, ValidationError, Length
+from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
 
-from connector import con, Cursos
+from utils.connector import con, Cursos
 
 
 def cpf_validate(cpf):

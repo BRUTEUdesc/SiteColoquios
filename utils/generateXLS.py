@@ -1,15 +1,18 @@
 import xlsxwriter
 from flask import make_response
 
-from connector import con
-from datetime import datetime
+from utils.connector import con
+from io import BytesIO
 
 def generate(id):
     with con.cursor() as cur:
+        output = BytesIO()
+
         cur.execute(
             'SELECT nome, curso, cpf, datanasc  FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-            'WHERE b.id = %s;',
+            'WHERE b.id = %s '
+            'ORDER BY nome;',
             (id,))
         rows = cur.fetchall()
         cur.execute('select * from coloquios.apresentacao where id = %s', (id,))
@@ -17,7 +20,7 @@ def generate(id):
         con.commit()
 
         # Create a new Excel file and add a worksheet
-        workbook = xlsxwriter.Workbook(col[1] + '.xlsx')
+        workbook = xlsxwriter.Workbook(output)
         worksheet = workbook.add_worksheet()
 
         # Define cell formats
@@ -73,9 +76,11 @@ def generate(id):
         # Close the workbook
         workbook.close()
 
+        output.seek(0)
+
         # Send the file as a response to the client
         filename = col[1] + '.xlsx'
-        response = make_response(open(filename, 'rb').read())
+        response = make_response(output.read())
 
         # Set the headers to force browser to download the file
         response.headers.set('Content-Type', 'application/vnd.ms-excel')

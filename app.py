@@ -1,15 +1,14 @@
-import datetime
 import json
 import flask_login
 import flask
-import xlsxwriter
 from hashlib import sha256
-from flask import Flask, render_template, request, redirect, flash, send_file, make_response
-from connector import con, Cursos
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, LoginForm, \
+from flask import Flask, render_template, request, redirect, flash
+from utils.connector import con, Cursos
+from flask_login import LoginManager, login_user
+from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, LoginForm, \
     default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
-from generateXLS import generate
+from utils.generateXLS import generate
+from models.user import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
@@ -17,24 +16,6 @@ app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
 login_manager = LoginManager()
 
 login_manager.init_app(app)
-
-
-class User:
-    user = None
-    password = None
-    authenticated = False
-
-    def get_id(self):
-        return self.user
-
-    def is_authenticated(self):
-        return self.authenticated
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
 
 
 @login_manager.unauthorized_handler
@@ -58,9 +39,6 @@ def login():
         if user is not None:
             if user.password == sha256(form.password.data.encode('utf-8')).hexdigest():
                 user.authenticated = True
-                print('\n\n\n\n\n\n')
-                print(login_user(user))
-
                 return redirect('/')
         else:
             return render_template('login.html', form=form, erro='Email ou senha incorretos')
@@ -91,69 +69,6 @@ def home():
             con.commit()
             return redirect("/")
     return render_template("index.html", dataTable=dataTable, form=form)
-
-
-@app.route("/coloquios/active/<id>", methods=['GET', 'POST'])
-@flask_login.login_required
-def active(id):
-    with con.cursor() as cur:
-        cur.execute(
-            'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
-            (id,))
-        con.commit()
-        dataColoquio = cur.fetchall()
-
-        cur.execute(
-            'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
-            'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-            'WHERE b.id = %s;',
-            (id,))
-        con.commit()
-        dataRaw = cur.fetchall()
-
-        dataTable = json.dumps(dataRaw, default=default_serializer)
-        dataTable = json.loads(dataTable)
-        form = paricipanteForm()
-
-        if form.validate_on_submit():
-            cpf = form.cpf.data
-            nome = form.nome.data
-            date = str(form.dateNasc.data)
-            curso = form.curso.data
-
-            idpar = None
-            cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
-            idpar = cur.fetchone()
-
-            cadastrado = None
-            cur.execute('SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
-                        'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-                        'WHERE b.id = %s and pessoa.id = %s;',
-                        (id, idpar))
-            con.commit()
-            cadastrado = cur.fetchone()
-
-            if cpf_validate(cpf) is False:
-                flash('CPF inválido')
-            elif cadastrado is not None:
-                flash('CPF já cadastrado')
-            else:
-                if idpar is None:
-                    cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
-                                (nome, date, curso, cpf))
-                    idpar = None
-                    cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
-                    idpar = cur.fetchone()
-                    cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
-                    con.commit()
-                    return redirect("/coloquios/active/" + id)
-                else:
-                    cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
-                    con.commit()
-                    return redirect("/coloquios/active/" + id)
-            return redirect("/coloquios/active/" + id)
-
-    return render_template('active.html', id=id, dataTable=dataTable, dataColoquio=dataColoquio, form=form)
 
 
 @app.route("/pessoas", methods=['GET', 'POST'])
@@ -266,6 +181,69 @@ def coloquios(id):
                 return redirect("/coloquios/" + id)
     return render_template("coloquio.html", id=id, form=form, dataColoquio=dataColoquio, dataTable=dataTable,
                            cpfForm=cpfForm, error=error)
+
+
+@app.route("/coloquios/active/<id>", methods=['GET', 'POST'])
+@flask_login.login_required
+def active(id):
+    with con.cursor() as cur:
+        cur.execute(
+            'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
+            (id,))
+        con.commit()
+        dataColoquio = cur.fetchall()
+
+        cur.execute(
+            'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
+            'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s;',
+            (id,))
+        con.commit()
+        dataRaw = cur.fetchall()
+
+        dataTable = json.dumps(dataRaw, default=default_serializer)
+        dataTable = json.loads(dataTable)
+        form = paricipanteForm()
+
+        if form.validate_on_submit():
+            cpf = form.cpf.data
+            nome = form.nome.data
+            date = str(form.dateNasc.data)
+            curso = form.curso.data
+
+            idpar = None
+            cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
+            idpar = cur.fetchone()
+
+            cadastrado = None
+            cur.execute('SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
+                        'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+                        'WHERE b.id = %s and pessoa.id = %s;',
+                        (id, idpar))
+            con.commit()
+            cadastrado = cur.fetchone()
+
+            if cpf_validate(cpf) is False:
+                flash('CPF inválido')
+            elif cadastrado is not None:
+                flash('CPF já cadastrado')
+            else:
+                if idpar is None:
+                    cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
+                                (nome, date, curso, cpf))
+                    idpar = None
+                    cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
+                    idpar = cur.fetchone()
+                    cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
+                    con.commit()
+                    return redirect("/coloquios/active/" + id)
+                else:
+                    cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
+                    con.commit()
+                    return redirect("/coloquios/active/" + id)
+            return redirect("/coloquios/active/" + id)
+
+    return render_template('active.html', id=id, dataTable=dataTable, dataColoquio=dataColoquio, form=form)
 
 
 @app.route("/coloquios/download/<id>", methods=['GET', 'POST'])
