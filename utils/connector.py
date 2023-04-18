@@ -1,7 +1,10 @@
+import os
+
 import psycopg2
 from urllib.parse import urlparse
 
-conStr = "localhost://postgres:postgres@postgres:5432"
+
+conStr = os.getenv("DB_URL")
 p = urlparse(conStr)
 
 pg_connection_dict = {

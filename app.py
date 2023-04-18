@@ -1,4 +1,6 @@
 import json
+import os
+
 import flask_login
 import flask
 from hashlib import sha256
@@ -9,9 +11,12 @@ from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipa
     default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
 from utils.generateXLS import generate
 from models.user import User
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
+#app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
 
 login_manager = LoginManager()
 
@@ -34,8 +39,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User()
-        user.password = '21bbd5ecd1c55bf51964954f46054c7650ad532a685a6b44ee8bc13e95459a58'
-        user.user = 'bruteudesc'
+        user.password = os.getenv("USER_PASSWORD")
+        user.user = os.getenv("USER_USER")
         if user is not None:
             if user.password == sha256(form.password.data.encode('utf-8')).hexdigest():
                 user.authenticated = True
