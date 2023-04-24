@@ -5,12 +5,16 @@ Flask-DotEnv==0.1.2
 Flask-Login==0.6.2
 Flask-WTF==1.1.1
 importlib-metadata==6.6.0
+iniconfig==2.0.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 MarkupSafe==2.1.2
+packaging==23.1
+pluggy==1.0.0
 psycopg2-binary==2.9.6
 pydot==1.4.2
 pyparsing==3.0.9
+pytest==7.3.1
 python-dotenv==1.0.0
 Werkzeug==2.2.3
 WTForms==3.0.1
