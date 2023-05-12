@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+env:
+    DB_USER: postgres
+    DB_PASSWORD: postgres
+    DB_NAME: postgres
+    DB_PORT: 5432
+
 jobs:
   build:
 
@@ -33,6 +39,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    
+    env:
+      DB_HOST: postgres
 
     steps:
     - name: Checkout to this repository
