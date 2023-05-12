@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import flask_login
 from hashlib import sha256
 from flask import Blueprint, Flask, render_template, request, redirect, flash, url_for
-from utils.connector import get_connection
+from utils.database import get_db, init_app
 from flask_login import LoginManager, login_user
 from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
     LoginForm, default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
@@ -16,8 +16,6 @@ from utils.cursos import cursos
 
 load_dotenv()
 
-con = get_connection(os.environ.get('DB_URL'))
-
 login_manager = LoginManager()
 bootstrap = Bootstrap5()
 
@@ -26,10 +24,15 @@ blueprint = Blueprint('coloquios', __name__, template_folder='templates')
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config.from_mapping(
+        SECRET_KEY=os.environ.get('SECRET_KEY'),
+        DB_URL=os.environ.get('DB_URL'),
+        DB_NAME=os.environ.get('DB_NAME'),
+    )
 
     login_manager.init_app(app)
     bootstrap.init_app(app)
+    init_app(app)
 
     app.register_blueprint(blueprint)
 
@@ -60,6 +63,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.user.data
+        # TODO: use Werkzeug to hash the password
         password = sha256(form.password.data.encode('utf-8')).hexdigest()
         if username == admin.username and password == admin.password:
             admin.authenticated = True
@@ -79,6 +83,7 @@ def logout():
 @blueprint.route('/', methods=['GET', 'POST'])
 @flask_login.login_required
 def home():
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.apresentacao order by id;')
         con.commit()
@@ -99,6 +104,7 @@ def home():
 @blueprint.route('/pessoas', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoas():
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.pessoa order by id;')
         con.commit()
@@ -128,6 +134,7 @@ def pessoas():
 @blueprint.route('/coloquios/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def coloquios(id):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
@@ -210,6 +217,7 @@ def coloquios(id):
 @blueprint.route('/coloquios/active/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def active(id):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
@@ -280,6 +288,7 @@ def download(id):
 @blueprint.route('/coloquios/apresentadores/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def apresentadores(id):
+    con = get_db()
     error = None
     with con.cursor() as cur:
         cur.execute(
@@ -352,12 +361,12 @@ def apresentadores(id):
 @blueprint.route('/pessoas/<cpf>', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoasCpf(cpf):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.pessoa WHERE cpf = %s;', (cpf,))
         data_raw = cur.fetchone()
         data_table = json.dumps(data_raw, default=default_serializer)
         data_table = json.loads(data_table)
-        form = None
         index = 0
         for i in range(0, 9):
             if data_raw[3] == cursos[i]:

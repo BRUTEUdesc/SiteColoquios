@@ -4,6 +4,7 @@ from wtforms import StringField, SubmitField, DateField, SelectField, PasswordFi
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
 from utils.cursos import cursos
+from utils.database import get_db
 
 
 def cpf_validate(cpf):
@@ -29,7 +30,7 @@ def cpf_validate(cpf):
 
 
 def cpf_search(cpf):
-    from app import con
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT cpf FROM coloquios.pessoa WHERE cpf = %s;', (cpf,))
         con.commit()
@@ -40,7 +41,7 @@ def cpf_search(cpf):
 
 
 def cpf_search_palestrante(cpf, id):
-    from app import con
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'SELECT cpf FROM coloquios.pessoa pessoa JOIN coloquios.palestrante ba ON pessoa.id = '

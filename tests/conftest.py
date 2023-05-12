@@ -1,20 +1,32 @@
 import os
 import pytest
 from dotenv import load_dotenv
+from app import create_app
+from flask_login import FlaskLoginClient
 
 
 def pytest_configure(config):
     load_dotenv()
-    os.environ['DATABASE_URL'] = os.environ.get('DB_TEST_URL')
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session', autouse=True)
+def db_setup(app):
+    from utils.database import create_db, init_db
+    with app.app_context():
+        create_db()
+        init_db()
+
+
+@pytest.fixture(scope='session')
 def app():
-    from app import app
-    from flask_login import FlaskLoginClient
+    app = create_app()
     app.test_client_class = FlaskLoginClient
-    app.config['TESTING'] = True
-    app.config['WTF_CSRF_ENABLED'] = False
+    app.config.update(
+        TESTING=True,
+        WTF_CSRF_ENABLED=False,
+        DB_URL=os.environ.get('DB_TEST_URL'),
+        DB_NAME=os.environ.get('DB_TEST_NAME'),
+    )
     yield app
 
 

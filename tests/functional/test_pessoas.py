@@ -17,4 +17,4 @@ class TestPessoas:
         assert response.status_code == 200
         assert b'Korhal' in response.data
         assert b'12/12/2000' in response.data
-        assert b'12345678901' in response.data
+        assert b'371.297.789-11' in response.data
