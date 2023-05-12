@@ -16,7 +16,7 @@ env:
     DB_TEST_NAME: coloquios
     DB_HOST: localhost
     DB_PORT: 5432
-
+    DB_SCHEMA_PATH: db/schema.sql
 jobs:
   build:
 
