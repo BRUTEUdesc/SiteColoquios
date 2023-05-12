@@ -4,9 +4,8 @@ import os
 from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
 import flask_login
-import flask
 from hashlib import sha256
-from flask import Flask, render_template, request, redirect, flash
+from flask import Blueprint, Flask, render_template, request, redirect, flash, url_for
 from utils.connector import get_connection
 from flask_login import LoginManager, login_user
 from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
@@ -17,15 +16,25 @@ from utils.cursos import cursos
 
 load_dotenv()
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-
 con = get_connection(os.environ.get('DB_URL'))
 
 login_manager = LoginManager()
-login_manager.init_app(app)
+bootstrap = Bootstrap5()
 
-bootstrap = Bootstrap5(app)
+blueprint = Blueprint('coloquios', __name__, template_folder='templates')
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+
+    login_manager.init_app(app)
+    bootstrap.init_app(app)
+
+    app.register_blueprint(blueprint)
+
+    return app
+
 
 admin = User(
     os.getenv('USER_USER'),
@@ -46,7 +55,7 @@ def user_loader(user_id):
     return None
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -61,13 +70,13 @@ def login():
     return render_template('login.html', form=form, title='Login')
 
 
-@app.route('/logout')
+@blueprint.route('/logout')
 def logout():
     flask_login.logout_user()
-    return flask.redirect(flask.url_for('login'))
+    return redirect(url_for('login'))
 
 
-@app.route('/', methods=['GET', 'POST'])
+@blueprint.route('/', methods=['GET', 'POST'])
 @flask_login.login_required
 def home():
     with con.cursor() as cur:
@@ -87,7 +96,7 @@ def home():
     return render_template('index.html', dataTable=data_table, form=form)
 
 
-@app.route('/pessoas', methods=['GET', 'POST'])
+@blueprint.route('/pessoas', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoas():
     with con.cursor() as cur:
@@ -116,7 +125,7 @@ def pessoas():
     return render_template('pessoas.html', dataTable=data_table, form=form)
 
 
-@app.route('/coloquios/<id>', methods=['GET', 'POST'])
+@blueprint.route('/coloquios/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def coloquios(id):
     with con.cursor() as cur:
@@ -198,7 +207,7 @@ def coloquios(id):
                            cpfForm=cpf_form, error=error)
 
 
-@app.route('/coloquios/active/<id>', methods=['GET', 'POST'])
+@blueprint.route('/coloquios/active/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def active(id):
     with con.cursor() as cur:
@@ -262,13 +271,13 @@ def active(id):
     return render_template('active.html', id=id, dataTable=data_table, dataColoquio=data_coloquio, form=form)
 
 
-@app.route('/coloquios/download/<id>', methods=['GET', 'POST'])
+@blueprint.route('/coloquios/download/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def download(id):
     return generate(id)
 
 
-@app.route('/coloquios/apresentadores/<id>', methods=['GET', 'POST'])
+@blueprint.route('/coloquios/apresentadores/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def apresentadores(id):
     error = None
@@ -340,7 +349,7 @@ def apresentadores(id):
                            error=error)
 
 
-@app.route('/pessoas/<cpf>', methods=['GET', 'POST'])
+@blueprint.route('/pessoas/<cpf>', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoasCpf(cpf):
     with con.cursor() as cur:
@@ -376,7 +385,3 @@ def pessoasCpf(cpf):
                 return redirect('/pessoas')
 
     return render_template('pessoa.html', form=form, x=data_table, dataRaw=data_raw, index=index)
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)

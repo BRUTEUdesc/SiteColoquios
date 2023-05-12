@@ -1,4 +1,11 @@
+import os
 import pytest
+from dotenv import load_dotenv
+
+
+def pytest_configure(config):
+    load_dotenv()
+    os.environ['DATABASE_URL'] = os.environ.get('DB_TEST_URL')
 
 
 @pytest.fixture()
