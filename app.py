@@ -1,26 +1,48 @@
 import json
 import os
 
+from flask_bootstrap import Bootstrap5
+from dotenv import load_dotenv
 import flask_login
-import flask
 from hashlib import sha256
-from flask import Flask, render_template, request, redirect, flash
-from utils.connector import con, Cursos
+from flask import Blueprint, Flask, render_template, request, redirect, flash, url_for
+from utils.database import get_db, init_app
 from flask_login import LoginManager, login_user
-from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, LoginForm, \
-    default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
+from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
+    LoginForm, default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
 from utils.generateXLS import generate
 from models.user import User
-from dotenv import load_dotenv
+from utils.cursos import cursos
 
 load_dotenv()
 
-app = Flask(__name__)
-#app.config['SECRET_KEY'] = "BAHSNSKJSDSDS"
-
 login_manager = LoginManager()
+bootstrap = Bootstrap5()
 
-login_manager.init_app(app)
+blueprint = Blueprint('coloquios', __name__, template_folder='templates')
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_mapping(
+        SECRET_KEY=os.environ.get('SECRET_KEY'),
+        DB_URL=os.environ.get('DB_URL'),
+        DB_NAME=os.environ.get('DB_NAME'),
+    )
+
+    login_manager.init_app(app)
+    bootstrap.init_app(app)
+    init_app(app)
+
+    app.register_blueprint(blueprint)
+
+    return app
+
+
+admin = User(
+    os.getenv('USER_USER'),
+    os.getenv('USER_PASSWORD'),
+)
 
 
 @login_manager.unauthorized_handler
@@ -30,62 +52,66 @@ def unauthorized():
 
 
 @login_manager.user_loader
-def user_loader(user):
-    return User
+def user_loader(user_id):
+    if user_id == admin.id:
+        return admin
+    return None
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User()
-        user.password = os.getenv("USER_PASSWORD")
-        user.user = os.getenv("USER_USER")
-        if user is not None:
-            if user.password == sha256(form.password.data.encode('utf-8')).hexdigest():
-                user.authenticated = True
-                return redirect('/')
+        username = form.user.data
+        # TODO: use Werkzeug to hash the password
+        password = sha256(form.password.data.encode('utf-8')).hexdigest()
+        if username == admin.username and password == admin.password:
+            admin.authenticated = True
+            login_user(admin)
+            return redirect('/')
         else:
             return render_template('login.html', form=form, erro='Email ou senha incorretos')
     return render_template('login.html', form=form, title='Login')
 
 
-@app.route('/logout')
+@blueprint.route('/logout')
 def logout():
     flask_login.logout_user()
-    return flask.redirect(flask.url_for('login'))
+    return redirect(url_for('login'))
 
 
-@app.route("/", methods=['GET', 'POST'])
+@blueprint.route('/', methods=['GET', 'POST'])
 @flask_login.login_required
 def home():
+    con = get_db()
     with con.cursor() as cur:
-        cur.execute("SELECT * FROM coloquios.apresentacao order by id;")
+        cur.execute('SELECT * FROM coloquios.apresentacao order by id;')
         con.commit()
-        dataRaw = cur.fetchall()
-        dataTable = json.dumps(dataRaw, default=default_serializer)
+        data_raw = cur.fetchall()
+        data_table = json.dumps(data_raw, default=default_serializer)
         form = coloquioForm()
-        dataTable = json.loads(dataTable)
+        data_table = json.loads(data_table)
 
         if form.validate_on_submit():
             nome = form.nome.data
             date = str(form.date.data)
             cur.execute('INSERT INTO coloquios.apresentacao(titulo, dataCol) VALUES (%s, %s);', (nome, date))
             con.commit()
-            return redirect("/")
-    return render_template("index.html", dataTable=dataTable, form=form)
+            return redirect('/')
+    return render_template('index.html', dataTable=data_table, form=form)
 
 
-@app.route("/pessoas", methods=['GET', 'POST'])
+@blueprint.route('/pessoas', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoas():
+    con = get_db()
     with con.cursor() as cur:
-        cur.execute("SELECT * FROM coloquios.pessoa order by id;")
+        cur.execute('SELECT * FROM coloquios.pessoa order by id;')
         con.commit()
-        dataRaw = cur.fetchall()
-        dataTable = json.dumps(dataRaw, default=default_serializer)
+        data_raw = cur.fetchall()
+        data_table = json.dumps(data_raw, default=default_serializer)
         form = paricipanteForm()
-        dataTable = json.loads(dataTable)
+        data_table = json.loads(data_table)
 
         if form.validate_on_submit():
             cpf = form.cpf.data
@@ -101,34 +127,34 @@ def pessoas():
                 cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
                             (nome, date, curso, cpf))
                 con.commit()
-            return redirect("/pessoas")
-    # print(dataTable[0].cpf)
-    return render_template("pessoas.html", dataTable=dataTable, form=form)
+            return redirect('/pessoas')
+    return render_template('pessoas.html', dataTable=data_table, form=form)
 
 
-@app.route("/coloquios/<id>", methods=['GET', 'POST'])
+@blueprint.route('/coloquios/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def coloquios(id):
-    dataRaw = None
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
             (id,))
         con.commit()
-        dataColoquio = cur.fetchall()
+        data_coloquio = cur.fetchall()
 
         cur.execute(
             'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s;',
-            (id,))
+            id
+        )
         con.commit()
-        dataRaw = cur.fetchall()
+        data_raw = cur.fetchall()
 
-        dataTable = json.dumps(dataRaw, default=default_serializer)
-        dataTable = json.loads(dataTable)
+        data_table = json.dumps(data_raw, default=default_serializer)
+        data_table = json.loads(data_table)
         form = editColoquioForm()
-        cpfForm = adicionarForm()
+        cpf_form = adicionarForm()
         if form.validate_on_submit():
             if request.form['submit_button'] == 'update':
                 titulo = form.nome.data
@@ -137,28 +163,28 @@ def coloquios(id):
                 cur.execute('update coloquios.apresentacao SET titulo = %s, datacol = %s where '
                             'coloquios.apresentacao.id = %s', (titulo, data, idcol))
                 con.commit()
-                return redirect("/coloquios/" + id)
+                return redirect('/coloquios/' + id)
             if request.form['submit_button'] == 'delete':
-                idcol = dataColoquio[0]
+                idcol = data_coloquio[0]
                 cur.execute('delete from coloquios.apresentacao where coloquios.apresentacao.id = %s', (idcol))
                 con.commit()
-                return redirect("/")
-        idpar = None
+                return redirect('/')
         error = None
 
-        if cpfForm.validate_on_submit():
+        if cpf_form.validate_on_submit():
             if request.form['submit_button'] == 'add_pessoa':
-                cpf = cpfForm.cpf.data
-                idpar = None
+                cpf = cpf_form.cpf.data
                 cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
                 con.commit()
                 idpar = cur.fetchone()
 
-                cadastrado = None
-                cur.execute('SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
-                            'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-                            'WHERE b.id = %s and pessoa.id = %s;',
-                            (id, idpar))
+                cur.execute(
+                    'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa '
+                    'JOIN coloquios.participante ba ON pessoa.id = ba.idpar '
+                    'JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+                    'WHERE b.id = %s and pessoa.id = %s;',
+                    (id, idpar)
+                )
                 con.commit()
                 cadastrado = cur.fetchone()
 
@@ -171,9 +197,9 @@ def coloquios(id):
                 else:
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect("/coloquios/" + id)
+                    return redirect('/coloquios/' + id)
             if request.form['submit_button'] == 'remove_pessoa':
-                cpf = cpfForm.cpf.data
+                cpf = cpf_form.cpf.data
                 cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
                 con.commit()
                 idpar = cur.fetchone()
@@ -183,31 +209,34 @@ def coloquios(id):
                 else:
                     cur.execute('delete from coloquios.participante where idcol = %s and idpar = %s', (id, idpar))
                     con.commit()
-                return redirect("/coloquios/" + id)
-    return render_template("coloquio.html", id=id, form=form, dataColoquio=dataColoquio, dataTable=dataTable,
-                           cpfForm=cpfForm, error=error)
+                return redirect('/coloquios/' + id)
+    return render_template('coloquio.html', id=id, form=form, dataColoquio=data_coloquio, dataTable=data_table,
+                           cpfForm=cpf_form, error=error)
 
 
-@app.route("/coloquios/active/<id>", methods=['GET', 'POST'])
+@blueprint.route('/coloquios/active/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def active(id):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
-            (id,))
+            id
+        )
         con.commit()
-        dataColoquio = cur.fetchall()
+        data_coloquio = cur.fetchall()
 
         cur.execute(
             'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s;',
-            (id,))
+            id
+        )
         con.commit()
-        dataRaw = cur.fetchall()
+        data_raw = cur.fetchall()
 
-        dataTable = json.dumps(dataRaw, default=default_serializer)
-        dataTable = json.loads(dataTable)
+        data_table = json.dumps(data_raw, default=default_serializer)
+        data_table = json.loads(data_table)
         form = paricipanteForm()
 
         if form.validate_on_submit():
@@ -216,15 +245,15 @@ def active(id):
             date = str(form.dateNasc.data)
             curso = form.curso.data
 
-            idpar = None
             cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
             idpar = cur.fetchone()
 
-            cadastrado = None
-            cur.execute('SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
-                        'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-                        'WHERE b.id = %s and pessoa.id = %s;',
-                        (id, idpar))
+            cur.execute(
+                'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
+                'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+                'WHERE b.id = %s and pessoa.id = %s;',
+                (id, idpar)
+            )
             con.commit()
             cadastrado = cur.fetchone()
 
@@ -236,59 +265,60 @@ def active(id):
                 if idpar is None:
                     cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
                                 (nome, date, curso, cpf))
-                    idpar = None
                     cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
                     idpar = cur.fetchone()
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect("/coloquios/active/" + id)
+                    return redirect('/coloquios/active/' + id)
                 else:
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect("/coloquios/active/" + id)
-            return redirect("/coloquios/active/" + id)
+                    return redirect('/coloquios/active/' + id)
+            return redirect('/coloquios/active/' + id)
 
-    return render_template('active.html', id=id, dataTable=dataTable, dataColoquio=dataColoquio, form=form)
+    return render_template('active.html', id=id, dataTable=data_table, dataColoquio=data_coloquio, form=form)
 
 
-@app.route("/coloquios/download/<id>", methods=['GET', 'POST'])
+@blueprint.route('/coloquios/download/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def download(id):
     return generate(id)
 
 
-@app.route("/coloquios/apresentadores/<id>", methods=['GET', 'POST'])
+@blueprint.route('/coloquios/apresentadores/<id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def apresentadores(id):
-    dataRaw = None
+    con = get_db()
     error = None
     with con.cursor() as cur:
         cur.execute(
             'select * from coloquios.apresentacao where id = %s;',
             (id,))
-        dataColoquio = cur.fetchone()
+        data_coloquio = cur.fetchone()
 
-        cur.execute('select id, nome, datanasc, curso, cpf from coloquios.palestrante palestrante join '
-                    'coloquios.pessoa pessoa on palestrante.idpal = pessoa.id where pessoa.id '
-                    '= palestrante.idpal and idcol = %s;',
-                    (id,))
+        cur.execute(
+            'select id, nome, datanasc, curso, cpf from coloquios.palestrante palestrante '
+            'join coloquios.pessoa pessoa on palestrante.idpal = pessoa.id '
+            'where pessoa.id = palestrante.idpal and idcol = %s;',
+            id
+        )
         con.commit()
-        dataRaw = cur.fetchall()
+        data_raw = cur.fetchall()
 
-        dataTable = json.dumps(dataRaw, default=default_serializer)
-        dataTable = json.loads(dataTable)
-        print(dataTable)
+        data_table = json.dumps(data_raw, default=default_serializer)
+        data_table = json.loads(data_table)
+        print(data_table)
         form = adicionarForm()
         if form.validate_on_submit():
             if request.form['submit_button'] == 'add':
                 cpf = form.cpf.data
-                pal = None
                 cur.execute('select * from coloquios.pessoa where coloquios.pessoa.cpf=%s', (cpf,))
                 pal = cur.fetchone()
 
-                cadastrado = None
-                cur.execute('SELECT idpar FROM coloquios.participante where idcol = %s and idpar = %s;',
-                            (id, pal[0]))
+                cur.execute(
+                    'SELECT idpar FROM coloquios.participante where idcol = %s and idpar = %s;',
+                    (id, pal[0])
+                )
                 con.commit()
                 cadastrado = cur.fetchone()
                 if cpf_search_palestrante(cpf, id):
@@ -305,7 +335,7 @@ def apresentadores(id):
                     con.commit()
                     cur.execute('insert into coloquios.palestrante(idpal, idcol) values (%s, %s);', (pal[0], idcol))
                     con.commit()
-                    return redirect("/coloquios/apresentadores/" + id)
+                    return redirect('/coloquios/apresentadores/' + id)
             if request.form['submit_button'] == 'remove':
                 cpf = form.cpf.data
                 if not cpf_search_palestrante(cpf, id):
@@ -315,34 +345,35 @@ def apresentadores(id):
                     idcol = id
                     cur.execute('select * from coloquios.pessoa where coloquios.pessoa.cpf=%s', (cpf,))
                     pal = cur.fetchone()
-                    cur.execute('delete from coloquios.palestrante where coloquios.palestrante.idpal = %s and '
-                                'coloquios.palestrante.idcol = %s;', (pal[0], idcol[0]))
+                    cur.execute(
+                        'delete from coloquios.palestrante '
+                        'where coloquios.palestrante.idpal = %s '
+                        'and coloquios.palestrante.idcol = %s;',
+                        (pal[0], idcol[0])
+                    )
                     con.commit()
-                    return redirect("/coloquios/apresentadores/" + id)
+                    return redirect('/coloquios/apresentadores/' + id)
 
-    return render_template("apresentadores.html", id=id, form=form, dataColoquio=dataColoquio, dataTable=dataTable,
+    return render_template('apresentadores.html', id=id, form=form, dataColoquio=data_coloquio, dataTable=data_table,
                            error=error)
 
 
-@app.route("/pessoas/<cpf>", methods=['GET', 'POST'])
+@blueprint.route('/pessoas/<cpf>', methods=['GET', 'POST'])
 @flask_login.login_required
 def pessoasCpf(cpf):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.pessoa WHERE cpf = %s;', (cpf,))
-        dataRaw = cur.fetchone()
-        dataTable = json.dumps(dataRaw, default=default_serializer)
-        dataTable = json.loads(dataTable)
-        form = None
+        data_raw = cur.fetchone()
+        data_table = json.dumps(data_raw, default=default_serializer)
+        data_table = json.loads(data_table)
         index = 0
         for i in range(0, 9):
-            if dataRaw[3] == Cursos[i]:
+            if data_raw[3] == cursos[i]:
                 index = i + 1
 
-        form = editParicipanteForm(request.form, curso=Cursos[i])
-        # form.nome.data = dataRaw[1]
-        # form.dateNasc.data = dataRaw[2]
-        # form.curso.data = dataRaw[3]
-        form.cpf.data = dataRaw[4]
+        form = editParicipanteForm(request.form, curso=cursos[i])
+        form.cpf.data = data_raw[4]
 
         if form.validate_on_submit():
             if request.form['submit_button'] == 'update':
@@ -350,19 +381,16 @@ def pessoasCpf(cpf):
                 nome = form.nome.data
                 date = str(form.dateNasc.data)
                 curso = form.curso.data
-                cur.execute('UPDATE coloquios.pessoa SET nome = %s,  datanasc = %s, curso = %s WHERE cpf = %s;',
-                            (nome, date, curso, cpf))
-                updated_rows = cur.rowcount
+                cur.execute(
+                    'UPDATE coloquios.pessoa SET nome = %s,  datanasc = %s, curso = %s WHERE cpf = %s;',
+                    (nome, date, curso, cpf)
+                )
                 con.commit()
-                return redirect("/pessoas/" + cpf)
+                return redirect('/pessoas/' + cpf)
             elif request.form['submit_button'] == 'delete':
                 cpf = form.cpf.data
                 cur.execute('DELETE FROM coloquios.pessoa Where cpf = %s;', (cpf,))
                 con.commit()
-                return redirect("/pessoas")
+                return redirect('/pessoas')
 
-    return render_template("pessoa.html", form=form, x=dataTable, dataRaw=dataRaw, index=index)
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    return render_template('pessoa.html', form=form, x=data_table, dataRaw=data_raw, index=index)

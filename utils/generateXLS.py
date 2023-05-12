@@ -1,10 +1,11 @@
+from io import BytesIO
+
 import xlsxwriter
 from flask import make_response
 
-from utils.connector import con
-from io import BytesIO
 
 def generate(id):
+    from app import con
     with con.cursor() as cur:
         output = BytesIO()
 

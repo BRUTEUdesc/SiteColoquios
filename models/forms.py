@@ -3,8 +3,8 @@ import datetime
 from wtforms import StringField, SubmitField, DateField, SelectField, PasswordField
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
-
-from utils.connector import con, Cursos
+from utils.cursos import cursos
+from utils.database import get_db
 
 
 def cpf_validate(cpf):
@@ -30,6 +30,7 @@ def cpf_validate(cpf):
 
 
 def cpf_search(cpf):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute('SELECT cpf FROM coloquios.pessoa WHERE cpf = %s;', (cpf,))
         con.commit()
@@ -40,6 +41,7 @@ def cpf_search(cpf):
 
 
 def cpf_search_palestrante(cpf, id):
+    con = get_db()
     with con.cursor() as cur:
         cur.execute(
             'SELECT cpf FROM coloquios.pessoa pessoa JOIN coloquios.palestrante ba ON pessoa.id = '
@@ -91,7 +93,7 @@ class paricipanteForm(FlaskForm):
 
     nome = StringField('nome', validators=[DataRequired()])
     cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
-    curso = SelectField('curso', choices=Cursos)
+    curso = SelectField('curso', choices=cursos)
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()
 
@@ -99,6 +101,6 @@ class paricipanteForm(FlaskForm):
 class editParicipanteForm(FlaskForm):
     nome = StringField('nome', validators=[DataRequired()])
     cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
-    curso = SelectField('curso', choices=Cursos)
+    curso = SelectField('curso', choices=cursos)
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()

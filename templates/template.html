@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-
-
-<html>
-    <head lang="pt">
+<html lang="pt">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="{{ url_for('static', filename='icons/icon.png') }}" type="image/png">
-        <link href="{{ url_for('static', filename='bootstrap-5.2.0-beta1/dist/css/bootstrap.min.css') }}" rel="stylesheet">
-        <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+        
+        {% block styles %}
+            {{ bootstrap.load_css() }}
+        {% endblock %}
 
         <title>Coloquios</title>
+        {% endblock %}
     </head>
     <body>
-      <script src="{{ url_for('static', filename='bootstrap-5.2.0-beta1/dist/js/bootstrap.bundle.min.js') }}"></script>
-      
       {% block body %}{% endblock %}
+      
+      {% block scripts %}
+          {{ bootstrap.load_js() }}
+      {% endblock %}
     </body>
-
-    {% block scripts %}{% endblock %}
 </html>
