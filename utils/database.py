@@ -2,34 +2,33 @@ import os
 
 import click
 import psycopg2
-from urllib.parse import urlparse
 from flask import current_app, g
 
 
-def get_connection(db_url):
-    p = urlparse(db_url)
+def get_connection():
+    return psycopg2.connect(
+        host=current_app.config['DB_HOST'],
+        port=current_app.config['DB_PORT'],
+        user=current_app.config['DB_USER'],
+        password=current_app.config['DB_PASSWORD'],
+        dbname=current_app.config['DB_NAME']
+    )
 
-    pg_connection_dict = {
-        'dbname': p.hostname,
-        'user': p.username,
-        'password': p.password,
-        'port': p.port,
-        'host': p.scheme
-    }
 
-    return psycopg2.connect(**pg_connection_dict)
+def get_schemaless_connection():
+    return psycopg2.connect(
+        host=current_app.config['DB_HOST'],
+        port=current_app.config['DB_PORT'],
+        user=current_app.config['DB_USER'],
+        password=current_app.config['DB_PASSWORD']
+    )
 
 
 def get_db():
     if 'db' not in g:
-        g.db = get_connection(current_app.config['DB_URL'])
+        g.db = get_connection()
 
     return g.db
-
-
-def get_db_schemaless():
-    db_url = "localhost://postgres:postgres@postgres:5432"
-    return get_connection(db_url)
 
 
 def init_db():
@@ -41,7 +40,7 @@ def init_db():
 
 
 def create_db():
-    con = get_db_schemaless()
+    con = get_schemaless_connection()
     with con.cursor() as cur:
         db_name = current_app.config['DB_NAME']
         con.autocommit = True
