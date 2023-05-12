@@ -10,9 +10,10 @@ permissions:
   contents: read
 
 env:
+    SECRET_KEY: BRUTEBRUTE
     DB_USER: postgres
     DB_PASSWORD: postgres
-    DB_NAME: coloquios
+    DB_TEST_NAME: coloquios
     DB_HOST: localhost
     DB_PORT: 5432
 
@@ -31,9 +32,9 @@ jobs:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_USER: ${{ env.DB_USER }} 
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_TEST_NAME }}
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
