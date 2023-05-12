@@ -66,6 +66,8 @@ This tutorial assumes you have already installed all the required and recommende
 
     ```bash
     docker-compose up -d
+    flask db-create
+    flask db-init
     ```
    
 7. Run the application
