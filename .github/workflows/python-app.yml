@@ -13,6 +13,7 @@ env:
     DB_USER: postgres
     DB_PASSWORD: postgres
     DB_NAME: postgres
+    DB_HOST: localhost
     DB_PORT: 5432
 
 jobs:
@@ -26,9 +27,6 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
         env:
           POSTGRES_USER: ${DB_USER}
           POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -39,9 +37,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
-    env:
-      DB_HOST: postgres
 
     steps:
     - name: Checkout to this repository
