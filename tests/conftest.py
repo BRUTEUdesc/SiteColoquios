@@ -1,8 +1,8 @@
 import os
 import pytest
 from dotenv import load_dotenv
-from app import create_app
 from flask_login import FlaskLoginClient
+from app.app import create_app
 
 
 def pytest_configure(config):
@@ -11,7 +11,7 @@ def pytest_configure(config):
 
 @pytest.fixture(scope='session', autouse=True)
 def db_setup(app):
-    from utils.database import create_db, init_db
+    from app.utils.database import create_db, init_db
     with app.app_context():
         create_db()
         init_db()
@@ -37,7 +37,7 @@ def client(app):
 
 @pytest.fixture()
 def admin_client(app):
-    from app import admin
+    from app.app import admin
     return app.test_client(user=admin)
 
 

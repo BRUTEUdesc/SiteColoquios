@@ -1,18 +1,19 @@
 import json
 import os
 
-from flask_bootstrap import Bootstrap5
 from dotenv import load_dotenv
-import flask_login
 from hashlib import sha256
 from flask import Blueprint, Flask, render_template, request, redirect, flash, url_for
-from utils.database import get_db, init_app
-from flask_login import LoginManager, login_user
-from models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
+import flask_login
+from flask_login import LoginManager
+from flask_bootstrap import Bootstrap5
+
+from app.utils.database import get_db, init_app
+from app.models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
     LoginForm, default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
-from utils.generateXLS import generate
-from models.user import User
-from utils.cursos import cursos
+from app.utils.generateXLS import generate
+from app.models.user import User
+from app.utils.cursos import cursos
 
 load_dotenv()
 
@@ -70,7 +71,7 @@ def login():
         password = sha256(form.password.data.encode('utf-8')).hexdigest()
         if username == admin.username and password == admin.password:
             admin.authenticated = True
-            login_user(admin)
+            flask_login.login_user(admin)
             return redirect('/')
         else:
             return render_template('login.html', form=form, erro='Email ou senha incorretos')

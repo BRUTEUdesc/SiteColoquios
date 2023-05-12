@@ -3,8 +3,8 @@ import datetime
 from wtforms import StringField, SubmitField, DateField, SelectField, PasswordField
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
-from utils.cursos import cursos
-from utils.database import get_db
+from app.utils.cursos import cursos
+from app.utils.database import get_db
 
 
 def cpf_validate(cpf):

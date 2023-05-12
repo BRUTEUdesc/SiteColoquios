@@ -5,7 +5,7 @@ from flask import make_response
 
 
 def generate(id):
-    from app import con
+    from app.app import con
     with con.cursor() as cur:
         output = BytesIO()
 
