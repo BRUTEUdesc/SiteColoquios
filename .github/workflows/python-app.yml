@@ -17,6 +17,8 @@ env:
     DB_HOST: localhost
     DB_PORT: 5432
     DB_SCHEMA_PATH: db/schema.sql
+    ADMIN_USER: bruteudesc
+    ADMIN_PASSWORD: brutebrute
 jobs:
   build:
 

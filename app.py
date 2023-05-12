@@ -43,8 +43,8 @@ def create_app():
 
 
 admin = User(
-    os.getenv('USER_USER'),
-    os.getenv('USER_PASSWORD'),
+    os.getenv('ADMIN_USER'),
+    sha256(os.getenv('ADMIN_PASSWORD').encode('utf-8')).hexdigest(),
 )
 
 
