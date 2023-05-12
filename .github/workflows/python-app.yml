@@ -12,7 +12,7 @@ permissions:
 env:
     DB_USER: postgres
     DB_PASSWORD: postgres
-    DB_NAME: postgres
+    DB_NAME: coloquios
     DB_HOST: localhost
     DB_PORT: 5432
 
@@ -31,9 +31,9 @@ jobs:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
         env:
-          POSTGRES_USER: ${DB_USER}
-          POSTGRES_PASSWORD: ${DB_PASSWORD}
-          POSTGRES_DB: ${DB_NAME}
+          POSTGRES_USER: $DB_USER
+          POSTGRES_PASSWORD: $DB_PASSWORD
+          POSTGRES_DB: $DB_NAME
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
