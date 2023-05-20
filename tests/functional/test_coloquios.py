@@ -1,5 +1,5 @@
 class TestColoquios:
-    path = "/"
+    path = "/coloquios/"
 
     def test_render(self, admin_client):
         response = admin_client.get(self.path, follow_redirects=True)
