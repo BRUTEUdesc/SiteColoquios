@@ -8,7 +8,7 @@ import flask_login
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap5
 
-from app.utils.database import get_db, init_app
+from app.utils.database import get_db, Database
 from app.models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
     LoginForm, default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
 from app.utils.generateXLS import generate
@@ -19,6 +19,7 @@ load_dotenv()
 
 login_manager = LoginManager()
 bootstrap = Bootstrap5()
+db = Database()
 
 blueprint = Blueprint('coloquios', __name__, template_folder='templates')
 
@@ -36,7 +37,7 @@ def create_app():
 
     login_manager.init_app(app)
     bootstrap.init_app(app)
-    init_app(app)
+    db.init_app(app)
 
     app.register_blueprint(blueprint)
 
