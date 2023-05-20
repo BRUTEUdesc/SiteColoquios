@@ -27,6 +27,7 @@ class User:
         return False
 
 
+# TODO: use Werkzeug to hash the password
 admin = User(
     os.getenv('ADMIN_USER'),
     sha256(os.getenv('ADMIN_PASSWORD').encode('utf-8')).hexdigest(),
