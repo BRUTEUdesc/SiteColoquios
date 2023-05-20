@@ -1,5 +1,3 @@
-import os
-
 from flask import Blueprint, render_template, redirect, url_for
 from hashlib import sha256
 import flask_login
