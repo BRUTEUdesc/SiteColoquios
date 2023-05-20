@@ -1,0 +1,22 @@
+{% macro navitem(url, label) -%}
+  <li class="nav-item"><a href="{{ url }}" class="nav-link{{ ' active' if request.path == url }}">{{ label }}</a></li>
+{%- endmacro  %}
+
+{% macro navbar() %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a href="/" class="navbar-brand">
+        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt=""
+             width="35" height="35">
+      </a>
+      <div class="navbar-collapse justify-content-between">
+        <ul class="navbar-nav">
+          {{ navitem(url_for('coloquios.index'), 'Colóquios') }}
+          {{ navitem(url_for('pessoas.index'), 'Pessoas') }}
+        </ul>
+        
+        <button href="{{ url_for('auth.logout') }}" class="btn btn-outline-warning">Logout</button>
+      </div>
+    </div>
+  </nav>
+{%- endmacro %}
