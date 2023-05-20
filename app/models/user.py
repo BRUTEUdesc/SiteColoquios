@@ -1,4 +1,6 @@
+import os
 import uuid
+from hashlib import sha256
 
 
 class User:
@@ -23,3 +25,9 @@ class User:
 
     def is_anonymous(self):
         return False
+
+
+admin = User(
+    os.getenv('ADMIN_USER'),
+    sha256(os.getenv('ADMIN_PASSWORD').encode('utf-8')).hexdigest(),
+)

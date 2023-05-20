@@ -2,17 +2,13 @@ import json
 import os
 
 from dotenv import load_dotenv
-from hashlib import sha256
-from flask import Blueprint, Flask, render_template, request, redirect, flash, url_for
+from flask import Blueprint, Flask, render_template, request, redirect, flash
 import flask_login
-from flask_login import LoginManager
-from flask_bootstrap import Bootstrap5
 
 from app.extensions.database import get_db
 from app.models.forms import coloquioForm, editColoquioForm, adicionarForm, paricipanteForm, editParicipanteForm, \
-    LoginForm, default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
+    default_serializer, cpf_validate, cpf_search, cpf_search_palestrante
 from app.utils.generateXLS import generate
-from app.models.user import User
 from app.utils.cursos import cursos
 
 load_dotenv()
@@ -38,50 +34,11 @@ def create_app():
     bootstrap.init_app(app)
     database.init_app(app)
 
+    from app.routes import auth
     app.register_blueprint(blueprint)
+    app.register_blueprint(auth.blueprint)
 
     return app
-
-
-admin = User(
-    os.getenv('ADMIN_USER'),
-    sha256(os.getenv('ADMIN_PASSWORD').encode('utf-8')).hexdigest(),
-)
-
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    # do stuff
-    return redirect('/login')
-
-
-@login_manager.user_loader
-def user_loader(user_id):
-    if user_id == admin.id:
-        return admin
-    return None
-
-
-@blueprint.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.user.data
-        # TODO: use Werkzeug to hash the password
-        password = sha256(form.password.data.encode('utf-8')).hexdigest()
-        if username == admin.username and password == admin.password:
-            admin.authenticated = True
-            flask_login.login_user(admin)
-            return redirect('/')
-        else:
-            return render_template('login.html', form=form, erro='Email ou senha incorretos')
-    return render_template('login.html', form=form, title='Login')
-
-
-@blueprint.route('/logout')
-def logout():
-    flask_login.logout_user()
-    return redirect(url_for('login'))
 
 
 @blueprint.route('/', methods=['GET', 'POST'])

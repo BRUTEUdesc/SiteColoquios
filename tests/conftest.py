@@ -11,7 +11,7 @@ def pytest_configure(config):
 
 @pytest.fixture(scope='session', autouse=True)
 def db_setup(app):
-    from app.utils.database import create_db, init_db
+    from app.extensions.database import create_db, init_db
     with app.app_context():
         create_db()
         init_db()
@@ -37,7 +37,7 @@ def client(app):
 
 @pytest.fixture()
 def admin_client(app):
-    from app.app import admin
+    from app.models.user import admin
     return app.test_client(user=admin)
 
 
