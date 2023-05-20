@@ -5,6 +5,18 @@ import psycopg2
 from flask import current_app, g
 
 
+class Database:
+    def __init__(self, app=None):
+        if app is not None:
+            self.init_app(app)
+
+    @staticmethod
+    def init_app(app):
+        app.teardown_appcontext(close_db)
+        app.cli.add_command(db_init_command)
+        app.cli.add_command(db_create_command)
+
+
 def get_connection():
     return psycopg2.connect(
         host=current_app.config['DB_HOST'],
@@ -66,9 +78,3 @@ def db_init_command():
 def db_create_command():
     create_db()
     click.echo('Creating the database.')
-
-
-def init_app(app):
-    app.teardown_appcontext(close_db)
-    app.cli.add_command(db_init_command)
-    app.cli.add_command(db_create_command)
