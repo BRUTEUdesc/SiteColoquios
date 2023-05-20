@@ -5,7 +5,7 @@ class TestPessoas:
         response = admin_client.get(self.path, follow_redirects=True)
         assert response.status_code == 200
         assert b'Pessoas' in response.data
-        assert b'Uma lista de todos os pessoas' in response.data
+        assert b'Uma lista de todas as pessoas' in response.data
 
     def test_create(self, admin_client):
         response = admin_client.post(self.path, follow_redirects=True, data={
