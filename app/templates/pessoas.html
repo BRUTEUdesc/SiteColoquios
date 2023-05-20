@@ -1,117 +1,85 @@
-{% extends 'template.html' %}
+{% extends 'base.html' %}
 
-{% block body %}
-<header class="p-3 bg-dark text-white" >
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <a href="/app/static" class="navbar-brand">
-        <img src="{{ url_for('static', filename='icons/Img_SPRAY_Santanadja_1504006.png') }}" alt="" width="35" height="35">
-      </a>
+{% from 'macros/header.html' import header %}
 
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="http://localhost:5000/" class="nav-link px-3 text-secondary">Colóquios</a></li>
-        <li><a href="#" class="nav-link px-3 text-white">Pessoas</a></li>
-      </ul>
-
-      <form class="form-inline my-2 my-lg-0">
-        <a href="http://localhost:5000/logout" class="btn btn-outline-warning my-2 my-sm-0">Logout</a>
-    </form>
-    </div>
-  </div>
-</header>
-
-<div class="col-md-5 p-lg-1 mx-auto my-5" >
-  <h1 class="display-4 fw-normal text">Pessoas 🤓</h1>
-  <p class="lead fw-normal">Uma lista de todos os pessoas. Por favor clique na pessoas para ser redirecionado</p>
-  <form method="POST">
-    {{ form.csrf_token }}
-    <div class="row">
-      <div class="col">
-        <div class="mb-3">
-        <label class="form-label">Nome Completo</label>
-        {{ form.nome(class_="form-control", placeholder="Weliton Achado") }}
-      </div>
-    </div>
-      <div class="col">
-        <div class="mb-3">
-          <label class="form-label">Data de Aniversário</label>
-          {{ form.dateNasc(class_="form-control") }}
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div class="mb-3">
-        <label class="form-label">CPF</label>
-        {{ form.cpf(class_="form-control", placeholder="000.000.000-00") }}
-      </div>
-
-
-            {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                    <ul class=flashes>
-                    {% for message in messages %}
-                      <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-
-    </div>
-
-      <div class="col">
-        <div class="mb-3">
-          <label class="form-label">Curso</label>
-            {{ form.curso(class_="form-select") }}
-        </div>
-      </div>
-    </div>
-
-    <button type="submit" value="Go" class="btn btn-primary">Adicionar pessoa</button>
-  </form>
-  
-</div>
-<!--
-<div class="col-md-5 p-lg-1 mx-auto my-5">
-  <div class="input-group">
-    <input type="text" class="form-control" placeholder="CPF" aria-label="CPF" aria-describedby="button-addon2">
-    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Pesquisar</button>
-  </div>
-</div>
--->
-<div class="col-md-10 mx-auto" onload="loadTable()">
-  
-  <table class="table" id="Coloquios">
-    <thead class="table-dark">
-        <tr>
-          <th scope="col">id</th>
-          <th scope="col">Nome Completo</th>
-          <th scope="col">Data Nasc.</th>
-          <th scope="col">Curso</th>
-          <th scope="col">CPF</th>
-        </tr>
-      </thead>
-      <tbody >
-        {% for row in dataTable %}
-            <tr class='clickable-row' data-href="http://localhost:5000/pessoas/{{ row[4]}}">
-              {% for v in row %}
-                  <td>{{v}}</td>
-              {% endfor %}
-            </tr>
-        {% endfor %}
-      </tbody>
-  </table>
-</div>
+{% block head %}
+  {{ header() }}
+  {{ super() }}
 {% endblock %}
 
-{% block scripts %}
+{% block body %}
+  <div class="col-md-5 p-lg-1 mx-auto my-5">
+    <h1 class="display-4 fw-normal text">Pessoas 🤓</h1>
+    <p class="lead fw-normal">Uma lista de todas as pessoas. Por favor, clique na pessoa para ser redirecionado</p>
+    <form method="POST">
+      {{ form.csrf_token }}
+      <div class="row">
+        <div class="col">
+          <div class="mb-3">
+            <label class="form-label">Nome Completo</label>
+            {{ form.nome(class_="form-control", placeholder="Weliton Achado") }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="mb-3">
+            <label class="form-label">Data de Aniversário</label>
+            {{ form.dateNasc(class_="form-control") }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <div class="mb-3">
+            <label class="form-label">CPF</label>
+            {{ form.cpf(class_="form-control", placeholder="000.000.000-00") }}
+          </div>
 
-<script>
-  jQuery(document).ready(function($) {
-    $(".clickable-row").click(function() {
-        window.open($(this).data("href"), '_blank');
-    });
-  });
-</script>
 
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <ul class=flashes>
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          {% endwith %}
+
+        </div>
+
+        <div class="col">
+          <div class="mb-3">
+            <label class="form-label">Curso</label>
+            {{ form.curso(class_="form-select") }}
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" value="Go" class="btn btn-primary">Adicionar pessoa</button>
+    </form>
+
+  </div>
+
+  <div class="col-md-10 mx-auto">
+    <table class="table" id="Coloquios">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Nome Completo</th>
+        <th scope="col">Data Nasc.</th>
+        <th scope="col">Curso</th>
+        <th scope="col">CPF</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for row in dataTable %}
+        <td><a href="{{ url_for('pessoas.pessoa', cpf=row[4]) }}">{{ row[0] }}</a></td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

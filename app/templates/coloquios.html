@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% from 'macros/header.html' import header %}
+
+{% block head %}
+  {{ header() }}
+  {{ super() }}
+{% endblock %}
+
+{% block body %}
+  <div class="col-md-5 p-lg-1 mx-auto my-5">
+    <h1 class="display-4 fw-normal text">Colóquios 🏆</h1>
+    <p class="lead fw-normal">Uma lista de todos os colóquios. Por favor clique no colóquio para ser redirecionado</p>
+    <form method="POST">
+      {{ form.csrf_token }}
+      <div class="mb-3">
+        <label class="form-label">Título do colóquio</label>
+        {{ form.nome(class_="form-control", placeholder="Balões fama e desespero") }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Data</label>
+        {{ form.date(class_="form-control") }}
+      </div>
+      <button type="submit" value="Go" class="btn btn-primary">Adicionar colóquio</button>
+    </form>
+  </div>
+  <div class="col-md-10 mx-auto">
+    <table class="table" id="Coloquios">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Título do colóquio</th>
+        <th scope="col">Data</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for row in dataTable %}
+        <tr>
+          <td><a href="{{ url_for('coloquios.coloquio', id=row[0]) }}">{{ row[0] }}</a></td>
+          <td>{{ row[1] }}</td>
+          <td>{{ row[2] }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -27,7 +27,7 @@ def index():
             cur.execute('INSERT INTO coloquios.apresentacao(titulo, dataCol) VALUES (%s, %s);', (nome, date))
             con.commit()
             return redirect(url_for('coloquios.index'))
-    return render_template('index.html', dataTable=data_table, form=form)
+    return render_template('coloquios.html', dataTable=data_table, form=form)
 
 
 @blueprint.route('/<id>', methods=['GET', 'POST'])
