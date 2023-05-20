@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, DateField, SelectField, PasswordFi
 from wtforms.validators import DataRequired, Length
 from flask_wtf import FlaskForm
 from app.utils.cursos import cursos
-from app.utils.database import get_db
+from app.extensions.database import get_db
 
 
 def cpf_validate(cpf):

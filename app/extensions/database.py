@@ -78,3 +78,6 @@ def db_init_command():
 def db_create_command():
     create_db()
     click.echo('Creating the database.')
+
+
+database = Database()
