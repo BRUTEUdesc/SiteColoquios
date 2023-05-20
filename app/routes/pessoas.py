@@ -4,7 +4,8 @@ import flask_login
 from flask import Blueprint, flash, redirect, render_template, url_for, request
 
 from app.extensions.database import get_db
-from app.models.forms import paricipanteForm, default_serializer, cpf_validate, cpf_search, editParicipanteForm
+from app.models.forms import ParticipanteForm, default_serializer, ParticipanteEditForm
+from app.utils.cpf import cpf_validate, cpf_search
 from app.utils.cursos import cursos
 
 blueprint = Blueprint('pessoas', __name__, url_prefix='/pessoas')
@@ -19,7 +20,7 @@ def index():
         con.commit()
         data_raw = cur.fetchall()
         data_table = json.dumps(data_raw, default=default_serializer)
-        form = paricipanteForm()
+        form = ParticipanteForm()
         data_table = json.loads(data_table)
 
         if form.validate_on_submit():
@@ -54,7 +55,7 @@ def pessoa(cpf):
             if data_raw[3] == cursos[i]:
                 idx = i + 1
 
-        form = editParicipanteForm(request.form, curso=cursos[i])
+        form = ParticipanteEditForm(request.form, curso=cursos[i])
         form.cpf.data = data_raw[4]
 
         if form.validate_on_submit():

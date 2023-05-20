@@ -3,8 +3,8 @@ import json
 import flask_login
 
 from app.extensions.database import get_db
-from app.models.forms import coloquioForm, default_serializer, editColoquioForm, adicionarForm, cpf_validate, \
-    cpf_search, paricipanteForm, cpf_search_palestrante
+from app.models.forms import ColoquioForm, default_serializer, ColoquioEditForm, CpfForm, ParticipanteForm
+from app.utils.cpf import cpf_validate, cpf_search, cpf_search_palestrante
 
 blueprint = Blueprint('coloquios', __name__, url_prefix='/coloquios')
 
@@ -18,7 +18,7 @@ def index():
         con.commit()
         data_raw = cur.fetchall()
         data_table = json.dumps(data_raw, default=default_serializer)
-        form = coloquioForm()
+        form = ColoquioForm()
         data_table = json.loads(data_table)
 
         if form.validate_on_submit():
@@ -52,8 +52,8 @@ def coloquio(id):
 
         data_table = json.dumps(data_raw, default=default_serializer)
         data_table = json.loads(data_table)
-        form = editColoquioForm()
-        cpf_form = adicionarForm()
+        form = ColoquioEditForm()
+        cpf_form = CpfForm()
         if form.validate_on_submit():
             if request.form['submit_button'] == 'update':
                 titulo = form.nome.data
@@ -136,7 +136,7 @@ def active(id):
 
         data_table = json.dumps(data_raw, default=default_serializer)
         data_table = json.loads(data_table)
-        form = paricipanteForm()
+        form = ParticipanteForm()
 
         if form.validate_on_submit():
             cpf = form.cpf.data
@@ -208,7 +208,7 @@ def apresentadores(id):
         data_table = json.dumps(data_raw, default=default_serializer)
         data_table = json.loads(data_table)
         print(data_table)
-        form = adicionarForm()
+        form = CpfForm()
         if form.validate_on_submit():
             if request.form['submit_button'] == 'add':
                 cpf = form.cpf.data
