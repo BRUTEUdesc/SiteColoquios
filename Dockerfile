@@ -12,4 +12,4 @@ COPY . .
 
 VOLUME [ "/SiteColoquios/app" ]
 
-CMD [ "python3", "-m" , "flask", "run" ]
+CMD [ "gunicorn", "-b", "0.0.0.0:8000", "app:create_app()" ]
