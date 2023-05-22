@@ -10,3 +10,16 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/SiteColoquios/app
+    env_file:
+      - .env
+    environment:
+        DB_HOST: postgres
+        FLASK_RUN_HOST: 0.0.0.0
+    depends_on:
+      - postgres

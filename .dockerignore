@@ -1,0 +1,13 @@
+# Git / Github
+.git*
+
+# Python
+venv
+__pycache__
+.pytest_cache
+
+# PyCharm
+.idea
+
+# Env
+.env
