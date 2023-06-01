@@ -57,7 +57,7 @@ This tutorial assumes you have already installed all the required and recommende
 5. Populate the .env file
 
     ```bash
-    cp .env.example .env
+    cp .env.template .env
     ```
 
     You can use the default values for development or Customize the .env file to your needs. Remember to update the .env.template when you add new environment variables.
