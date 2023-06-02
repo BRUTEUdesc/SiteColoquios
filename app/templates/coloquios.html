@@ -36,9 +36,9 @@
       <tbody>
       {% for row in dataTable %}
         <tr>
-          <td><a href="{{ url_for('coloquios.coloquio', id=row[0]) }}">{{ row[0] }}</a></td>
-          <td>{{ row[1] }}</td>
-          <td>{{ row[2] }}</td>
+          <td><a type="button" class="btn btn-secondary" href="{{ url_for('coloquios.coloquio', id=row[0]) }}" >{{ row[0] }}</a></td>
+          <td  class="align-middle">{{ row[1] }}</td>
+          <td  class="align-middle">{{ row[2] }}</td>
         </tr>
       {% endfor %}
       </tbody>
