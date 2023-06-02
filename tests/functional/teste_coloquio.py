@@ -22,7 +22,7 @@ class TesteColoquio:
         return coloquio_id
 
     def test_render(self, admin_client, create_coloquio):
-        response = admin_client.get(f"/coloquios/{create_coloquio}", follow_redirects=True)
+        response = admin_client.get(f"coloquios/coloquios/{create_coloquio}", follow_redirects=True)
         assert response.status_code == 200
         assert b'Coloquio 1' in response.data
         date_pattern = r'value="(\d{4}-\d{2}-\d{2})"'

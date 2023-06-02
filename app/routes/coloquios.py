@@ -26,7 +26,7 @@ def index():
             date = str(form.date.data)
             cur.execute('INSERT INTO coloquios.apresentacao(titulo, dataCol) VALUES (%s, %s);', (nome, date))
             con.commit()
-            return redirect(url_for('coloquios.index'))
+            return redirect(url_for('coloquios.coloquios.index'))
     return render_template('coloquios.html', dataTable=data_table, form=form)
 
 
@@ -67,7 +67,7 @@ def coloquio(id):
                 idcol = data_coloquio[0]
                 cur.execute('delete from coloquios.apresentacao where coloquios.apresentacao.id = %s', (idcol))
                 con.commit()
-                return redirect(url_for('coloquios.index'))
+                return redirect(url_for('coloquios.coloquios.index'))
         error = None
 
         if cpf_form.validate_on_submit():
@@ -96,7 +96,7 @@ def coloquio(id):
                 else:
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect('/coloquios/' + id)
+                    return redirect(url_for('coloquios.coloquios.coloquio', id=id))
             if request.form['submit_button'] == 'remove_pessoa':
                 cpf = cpf_form.cpf.data
                 cur.execute('select id from coloquios.pessoa where cpf = %s', (cpf,))
@@ -108,7 +108,7 @@ def coloquio(id):
                 else:
                     cur.execute('delete from coloquios.participante where idcol = %s and idpar = %s', (id, idpar))
                     con.commit()
-                return redirect('/coloquios/' + id)
+                return redirect(url_for('coloquios.coloquios.coloquio', id=id))
     return render_template('coloquio.html', id=id, form=form, dataColoquio=data_coloquio, dataTable=data_table,
                            cpfForm=cpf_form, error=error)
 

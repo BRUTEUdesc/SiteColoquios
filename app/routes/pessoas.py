@@ -37,7 +37,7 @@ def index():
                 cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
                             (nome, date, curso, cpf))
                 con.commit()
-            return redirect(url_for('pessoas.index'))
+            return redirect(url_for('coloquios.pessoas.index'))
     return render_template('pessoas.html', dataTable=data_table, form=form)
 
 
@@ -69,11 +69,11 @@ def pessoa(cpf):
                     (nome, date, curso, cpf)
                 )
                 con.commit()
-                return redirect('/pessoas/' + cpf)
+                return redirect(url_for('coloquios.pessoas.pessoa', cpf=cpf))
             elif request.form['submit_button'] == 'delete':
                 cpf = form.cpf.data
                 cur.execute('DELETE FROM coloquios.pessoa Where cpf = %s;', (cpf,))
                 con.commit()
-                return redirect('/pessoas')
+                return redirect(url_for('coloquios.pessoas.index'))
 
     return render_template('pessoa.html', form=form, x=data_table, dataRaw=data_raw, index=idx)

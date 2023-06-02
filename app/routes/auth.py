@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, current_app
 from hashlib import sha256
 import flask_login
 
@@ -12,7 +12,7 @@ blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 @login_manager.unauthorized_handler
 def unauthorized():
     # do stuff
-    return redirect('/auth/login')
+    return redirect(url_for('coloquios.auth.login'))
 
 
 @login_manager.user_loader
@@ -32,7 +32,7 @@ def login():
         if username == admin.username and password == admin.password:
             admin.authenticated = True
             flask_login.login_user(admin)
-            return redirect('/')
+            return redirect(url_for(current_app.config.get('HOME_ROUTE')))
         else:
             return render_template('login.html', form=form, erro='Email ou senha incorretos')
     return render_template('login.html', form=form, title='Login')
@@ -41,4 +41,4 @@ def login():
 @blueprint.route('/logout')
 def logout():
     flask_login.logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('coloquios.auth.login'))

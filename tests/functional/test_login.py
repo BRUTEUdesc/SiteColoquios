@@ -1,5 +1,5 @@
 class TestLogin:
-    path = '/auth/login'
+    path = '/coloquios/auth/login'
 
     def test_render(self, client):
         response = client.get(self.path, follow_redirects=True)
@@ -14,7 +14,7 @@ class TestLogin:
             'password': 'brutebrute'
         })
         assert response.status_code == 200
-        assert response.request.path == "/coloquios/"
+        assert response.request.path == "/coloquios/coloquios/"
 
     def test_auth_fail(self, client):
         response = client.post(self.path, follow_redirects=True, data={

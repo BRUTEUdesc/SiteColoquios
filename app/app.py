@@ -1,17 +1,18 @@
 import os
 
 from dotenv import load_dotenv
-from flask import Blueprint, Flask, redirect, url_for
-import flask_login
+from flask import Blueprint, Flask, redirect, url_for, current_app
 
 load_dotenv()
 
-blueprint = Blueprint('index', __name__, template_folder='templates')
+indexbp = Blueprint('index', __name__, template_folder='templates')
+blueprint = Blueprint('coloquios', __name__, url_prefix='/coloquios')
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_mapping(
+        HOME_ROUTE='coloquios.coloquios.index',
         SECRET_KEY=os.environ.get('SECRET_KEY'),
         DB_NAME=os.environ.get('DB_NAME'),
         DB_HOST=os.environ.get('DB_HOST'),
@@ -30,15 +31,20 @@ def create_app():
     from app.routes import auth
     from app.routes import coloquios
     from app.routes import pessoas
+    app.register_blueprint(indexbp)
+    blueprint.register_blueprint(auth.blueprint)
+    blueprint.register_blueprint(coloquios.blueprint)
+    blueprint.register_blueprint(pessoas.blueprint)
     app.register_blueprint(blueprint)
-    app.register_blueprint(auth.blueprint)
-    app.register_blueprint(coloquios.blueprint)
-    app.register_blueprint(pessoas.blueprint)
 
     return app
 
 
-@blueprint.route('/', methods=['GET', 'POST'])
-@flask_login.login_required
+@indexbp.route('/', methods=['GET', 'POST'])
 def index():
-    return redirect(url_for('coloquios.index'))
+    return redirect(url_for(current_app.config.get('HOME_ROUTE')))
+
+
+@blueprint.route('/', methods=['GET', 'POST'])
+def index():
+    return redirect(url_for(current_app.config.get('HOME_ROUTE')))
