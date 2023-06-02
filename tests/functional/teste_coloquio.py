@@ -1,3 +1,6 @@
+import datetime
+import re
+
 import pytest
 
 from app.extensions.database import get_db
@@ -22,3 +25,10 @@ class TesteColoquio:
         response = admin_client.get(f"/coloquios/{create_coloquio}", follow_redirects=True)
         assert response.status_code == 200
         assert b'Coloquio 1' in response.data
+        date_pattern = r'value="(\d{4}-\d{2}-\d{2})"'
+        match = re.search(date_pattern, response.data.decode('utf-8'))
+        assert match is not None, 'Date field not found in the response'
+
+        date_str = match.group(1)
+        expected_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+

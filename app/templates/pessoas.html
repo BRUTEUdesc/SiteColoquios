@@ -73,11 +73,13 @@
       </thead>
       <tbody>
       {% for row in dataTable %}
-        <td><a type="button" class="btn btn-secondary" href="{{ url_for('pessoas.pessoa', cpf=row[4]) }}">{{ row[0] }}</a></td>
-        <td class="align-middle">{{ row[1] }}</td>
-        <td class="align-middle">{{ row[2] }}</td>
-        <td class="align-middle">{{ row[3] }}</td>
-        <td class="align-middle">{{ row[4] }}</td>
+          <tr>
+            <td><a type="button" class="btn btn-secondary" href="{{ url_for('pessoas.pessoa', cpf=row[4]) }}">{{ row[0] }}</a></td>
+            <td class="align-middle">{{ row[1] }}</td>
+            <td class="align-middle">{{ row[2] }}</td>
+            <td class="align-middle">{{ row[3] }}</td>
+            <td class="align-middle">{{ row[4] }}</td>
+          </tr>
       {% endfor %}
       </tbody>
     </table>
