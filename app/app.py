@@ -10,7 +10,7 @@ blueprint = Blueprint('coloquios', __name__, url_prefix='/coloquios')
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/coloquios/static')
     app.config.from_mapping(
         HOME_ROUTE='coloquios.coloquios.index',
         SECRET_KEY=os.environ.get('SECRET_KEY'),
