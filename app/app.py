@@ -5,7 +5,7 @@ from flask import Blueprint, Flask, redirect, url_for, current_app
 
 load_dotenv()
 
-indexbp = Blueprint('index', __name__, template_folder='templates')
+index_bp = Blueprint('index', __name__, template_folder='templates')
 blueprint = Blueprint('coloquios', __name__, url_prefix='/coloquios')
 
 
@@ -31,7 +31,7 @@ def create_app():
     from app.routes import auth
     from app.routes import coloquios
     from app.routes import pessoas
-    app.register_blueprint(indexbp)
+    app.register_blueprint(index_bp)
     blueprint.register_blueprint(auth.blueprint)
     blueprint.register_blueprint(coloquios.blueprint)
     blueprint.register_blueprint(pessoas.blueprint)
@@ -40,7 +40,7 @@ def create_app():
     return app
 
 
-@indexbp.route('/', methods=['GET', 'POST'])
+@index_bp.route('/', methods=['GET', 'POST'])
 def index():
     return redirect(url_for(current_app.config.get('HOME_ROUTE')))
 
