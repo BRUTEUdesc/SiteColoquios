@@ -5,7 +5,7 @@ SERVICE_NAME="web"
 
 # Define the Docker Compose files
 COMPOSE_FILE="docker-compose.yml"
-PRODUCTION_FILE="production.yml"
+PRODUCTION_FILE="docker-compose.prod.yml"
 
 # Build the web service
 echo "Building the $SERVICE_NAME service..."

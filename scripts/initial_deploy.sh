@@ -2,7 +2,7 @@
 
 # Define the Docker Compose files
 COMPOSE_FILE="docker-compose.yml"
-PRODUCTION_FILE="production.yml"
+PRODUCTION_FILE="docker-compose.prod.yml"
 
 # Pull the latest images
 echo "Pulling the latest images..."

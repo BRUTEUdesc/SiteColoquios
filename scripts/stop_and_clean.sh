@@ -5,7 +5,7 @@ SERVICE_NAME="web"
 
 # Define the Docker Compose files
 COMPOSE_FILE="docker-compose.yml"
-PRODUCTION_FILE="production.yml"
+PRODUCTION_FILE="docker-compose.prod.yml"
 
 # Stop the web service and its dependencies
 echo "Stopping the $SERVICE_NAME service and its dependencies..."
