@@ -10,6 +10,4 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-VOLUME [ "/SiteColoquios/app" ]
-
 CMD [ "gunicorn", "-b", "0.0.0.0:8000", "app:create_app()" ]
