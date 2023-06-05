@@ -10,7 +10,8 @@ class User:
     authenticated = False
 
     def __init__(self, username, password):
-        self.id = uuid.uuid4()
+        self.id = "1123123213123"
+        #self.id = uuid.uuid4()
         self.username = username
         self.password = password
 

@@ -53,9 +53,9 @@ def pessoa(cpf):
         idx = 0
         for i in range(0, 9):
             if data_raw[3] == cursos[i]:
-                idx = i + 1
+                idx = i
 
-        form = ParticipanteEditForm(request.form, curso=cursos[i])
+        form = ParticipanteEditForm(request.form, curso=cursos[idx])
         form.cpf.data = data_raw[4]
 
         if form.validate_on_submit():
