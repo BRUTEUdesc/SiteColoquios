@@ -1,7 +1,9 @@
 # Site dos Colóquios
 [![Build Status](https://travis-ci.org/colquios/colquios.svg?branch=master)](https://travis-ci.org/colquios/colquios)
 
-Projeto de site para armazenar todos os participantes e colóquios já feitos, bem como a relação deles.
+O site é feito para gerenciar e administrar colóquios e auxiliar no processo de assinatura de presença e geração de certificados.
+O site para armazenar todos os participantes e colóquios já feitos, organizando eles e 
+dispondo em tabelas para facilitar a visualização e a busca de informações.
 
 ## ⚠️ Warning ⚠️
 
@@ -10,9 +12,8 @@ Esse projeto está em desenvolvimento ativo, e ainda não deve ser usado em prod
 ## Índice
 
 - [Developer Setup](#developer-setup)
-- [Uso](#uso)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
+- [Stack de desenvolvimento](#stack-de-desenvolvimento)
+- [Instalação](#instalação)
 - [Contato](#contato)
 - [Agradecimentos](#agradecimentos)
 
@@ -20,17 +21,18 @@ Esse projeto está em desenvolvimento ativo, e ainda não deve ser usado em prod
 
 Veja o guia de desenvolvimento [docs/dev_setup](docs/dev_setup.md).
 
-## Uso
+## Stack de desenvolvimento
 
-Explique como usar o projeto de forma clara e concisa. Forneça exemplos de código, comandos ou capturas de tela, se aplicável. Descreva as principais funcionalidades e como interagir com elas.
+Site feito em Python utilizando Flask, WTForms, Psycopg2, Postgres, Bootstrap, Pytest entre outros.
 
-## Contribuição
+## Instalação
 
-Explique como os usuários podem contribuir para o projeto. Forneça orientações sobre como configurar um ambiente de desenvolvimento, detalhes sobre o fluxo de trabalho de contribuição e instruções para enviar pull requests.
+Fazer um guia de instação no apache ou coisa do tipo?
 
 ## Contato
 
-Contate a gente via [bruteudesc@gmail.com](mailto:bruteudesc@gmail.com]), para qualquer dúvida ou sugestão. Também estamos disponíveis na sala F304 da UDESC campus de Joinville.
+Contate a gente via [bruteudesc@gmail.com](mailto:bruteudesc@gmail.com]), para qualquer dúvida ou sugestão. Também estamos disponíveis na [Sala 
+F304](https://goo.gl/maps/SVZyo3dUqxZcmgK4A) da UDESC campus de Joinville.
 
 ## Agradecimentos
 
