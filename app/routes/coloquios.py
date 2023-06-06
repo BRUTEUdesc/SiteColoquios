@@ -122,7 +122,6 @@ def active(id):
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
             id
         )
-        con.commit()
         data_coloquio = cur.fetchall()
 
         cur.execute(
