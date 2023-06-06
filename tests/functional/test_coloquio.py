@@ -6,7 +6,7 @@ import pytest
 from app.extensions.database import get_db
 
 
-class TesteColoquio:
+class TestColoquio:
     @pytest.fixture
     def create_coloquio(self, app):
         coloquio_id = None
