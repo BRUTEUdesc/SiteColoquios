@@ -52,7 +52,7 @@
       {{ cpfForm.csrf_token }}
       <div class="mb-3">
         <label class="form-label">CPF (somente cadastrados)</label>
-        {{ cpfForm.cpf(class_="form-control", placeholder="000.000.000-00") }}
+        {{ cpfForm.cpf(class_="form-control", placeholder="00000000000") }}
       </div>
 
       {% with messages = get_flashed_messages() %}

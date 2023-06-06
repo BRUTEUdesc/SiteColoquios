@@ -5,7 +5,8 @@ from flask import make_response
 
 
 def generate(id):
-    from app.app import con
+    from app.extensions.database import get_db
+    con = get_db()
     with con.cursor() as cur:
         output = BytesIO()
 

@@ -35,19 +35,20 @@ class CpfForm(FlaskForm):
         if not cpf_validate(field.data):
             return False
 
-    cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
+    cpf = StringField('cpf', [DataRequired(), Length(11, 11)])
     botao = SubmitField()
 
 
-class ParticipanteForm(FlaskForm):
-    def validate_cpf(form, field):
-        if not cpf_validate(field.data):
-            return False
-        elif cpf_search(field.data):
-            return False
+def validate_cpf(field):
+    if not cpf_validate(field.data):
+        return False
+    elif cpf_search(field.data):
+        return False
 
+
+class ParticipanteForm(FlaskForm):
     nome = StringField('nome', validators=[DataRequired()])
-    cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
+    cpf = StringField('cpf', [DataRequired(), Length(11, 11)])
     curso = SelectField('curso', choices=cursos)
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()
@@ -55,7 +56,7 @@ class ParticipanteForm(FlaskForm):
 
 class ParticipanteEditForm(FlaskForm):
     nome = StringField('nome', validators=[DataRequired()])
-    cpf = StringField('cpf', [DataRequired(), Length(14, 14)])
+    cpf = StringField('cpf', [DataRequired(), Length(11, 11)])
     curso = SelectField('curso', choices=cursos)
     dateNasc = DateField(validators=[DataRequired()])
     botao = SubmitField()

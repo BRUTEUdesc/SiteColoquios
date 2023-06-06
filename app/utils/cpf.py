@@ -2,23 +2,29 @@ from app.extensions.database import get_db
 
 
 def cpf_validate(cpf):
-    cpf_list = list(cpf)
-    cpf_list[3] = ''
-    cpf_list[7] = ''
-    cpf_list[11] = ''
-    numbers = "".join(cpf_list)
+    cpf = "".join(filter(str.isdigit, cpf))  # Remove non-digit characters
+    if len(cpf) != 11 or not cpf.isdigit():
+        return False
 
-    cpf = [int(char) for char in numbers if char.isdigit()]
-    if len(cpf) != 11:
+    # Validate the CPF digits
+    cpf_digits = [int(digit) for digit in cpf]
+    if len(set(cpf_digits)) == 1:  # Check if all digits are the same
         return False
-    if cpf == cpf[::-1]:
-        return False
-    for i in range(9, 11):
-        value = sum((cpf[num] * ((i + 1) - num) for num in range(0, i)))
-        digit = ((value * 10) % 11) % 10
-        if digit != cpf[i]:
-            return False
-    return True
+
+    # Calculate the first verification digit
+    sum_1 = sum(digit * weight for digit, weight in zip(cpf_digits[:9], range(10, 1, -1)))
+    digit_1 = (sum_1 * 10) % 11
+    if digit_1 == 10:
+        digit_1 = 0
+
+    # Calculate the second verification digit
+    sum_2 = sum(digit * weight for digit, weight in zip(cpf_digits[:10], range(11, 1, -1)))
+    digit_2 = (sum_2 * 10) % 11
+    if digit_2 == 10:
+        digit_2 = 0
+
+    # Check if the verification digits match
+    return digit_1 == cpf_digits[9] and digit_2 == cpf_digits[10]
 
 
 def cpf_search(cpf):
