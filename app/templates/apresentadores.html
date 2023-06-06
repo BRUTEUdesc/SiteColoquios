@@ -45,17 +45,19 @@
         <th scope="col">id</th>
         <th scope="col">Nome Completo</th>
         <th scope="col">Data Nasc.</th>
-        <th scope="col">CPF</th>
         <th scope="col">Curso</th>
+        <th scope="col">CPF</th>
       </tr>
       </thead>
       <tbody>
       {% for row in dataTable %}
-        <tr class='clickable-row' data-href="http://localhost:5000/pessoas/{{ row[4] }}">
-          {% for v in row %}
-            <td>{{ v }}</td>
-          {% endfor %}
-        </tr>
+          <tr>
+            <td><a type="button" class="btn btn-secondary" href="{{ url_for('coloquios.pessoas.pessoa', cpf=row[4]) }}">{{ row[0] }}</a></td>
+            <td class="align-middle">{{ row[1] }}</td>
+            <td class="align-middle">{{ row[2] }}</td>
+            <td class="align-middle">{{ row[3] }}</td>
+            <td class="align-middle">{{ row[4] }}</td>
+          </tr>
       {% endfor %}
       </tbody>
     </table>

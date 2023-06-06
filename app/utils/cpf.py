@@ -39,6 +39,7 @@ def cpf_search(cpf):
 def cpf_search_palestrante(cpf, id):
     con = get_db()
     with con.cursor() as cur:
+        data_raw = None
         cur.execute(
             'SELECT cpf FROM coloquios.pessoa pessoa '
             'JOIN coloquios.palestrante palestrante ON pessoa.id = palestrante.idpal '

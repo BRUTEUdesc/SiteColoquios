@@ -58,16 +58,18 @@ def coloquio(id):
             if request.form['submit_button'] == 'update':
                 titulo = form.nome.data
                 data = form.date.data
-                idcol = id
                 cur.execute('update coloquios.apresentacao SET titulo = %s, datacol = %s where '
-                            'coloquios.apresentacao.id = %s', (titulo, data, idcol))
+                            'coloquios.apresentacao.id = %s', (titulo, data, id))
                 con.commit()
-                return redirect('/coloquios/' + id)
+                return redirect(url_for('coloquios.coloquios.coloquio', id=id))
             if request.form['submit_button'] == 'delete':
-                idcol = data_coloquio[0]
-                cur.execute('delete from coloquios.apresentacao where coloquios.apresentacao.id = %s', (idcol))
+                print('asdasdasdasds')
+                cur.execute('delete from coloquios.participante where coloquios.participante.idcol = %s', id)
+                cur.execute('delete from coloquios.palestrante where coloquios.palestrante.idcol = %s', id)
+                cur.execute('delete from coloquios.apresentacao where coloquios.apresentacao.id = %s', id)
                 con.commit()
                 return redirect(url_for('coloquios.coloquios.index'))
+
         error = None
 
         if cpf_form.validate_on_submit():
@@ -157,6 +159,8 @@ def active(id):
 
             if cpf_validate(cpf) is False:
                 flash('CPF inválido')
+            elif cpf_search_palestrante(cpf, id):
+                flash('CPF já cadastrado como palestrante')
             elif cadastrado is not None:
                 flash('CPF já cadastrado')
             else:
@@ -167,12 +171,12 @@ def active(id):
                     idpar = cur.fetchone()
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect('/coloquios/active/' + id)
+                    return redirect(url_for('coloquios.coloquios.active', id=id))
                 else:
                     cur.execute('insert into coloquios.participante(idcol, idpar) values (%s, %s)', (id, idpar))
                     con.commit()
-                    return redirect('/coloquios/active/' + id)
-            return redirect('/coloquios/active/' + id)
+                    return redirect(url_for('coloquios.coloquios.active', id=id))
+            return redirect(url_for('coloquios.coloquios.active', id=id))
 
     return render_template('active.html', id=id, dataTable=data_table, dataColoquio=data_coloquio, form=form)
 
@@ -234,7 +238,7 @@ def apresentadores(id):
                     con.commit()
                     cur.execute('insert into coloquios.palestrante(idpal, idcol) values (%s, %s);', (pal[0], idcol))
                     con.commit()
-                    return redirect('/coloquios/apresentadores/' + id)
+                    return redirect(url_for('coloquios.coloquios.apresentadores', id=id))
             if request.form['submit_button'] == 'remove':
                 cpf = form.cpf.data
                 if not cpf_search_palestrante(cpf, id):
@@ -251,7 +255,7 @@ def apresentadores(id):
                         (pal[0], idcol[0])
                     )
                     con.commit()
-                    return redirect('/coloquios/apresentadores/' + id)
+                    return redirect(url_for('coloquios.coloquios.apresentadores', id=id))
 
     return render_template('apresentadores.html', id=id, form=form, dataColoquio=data_coloquio, dataTable=data_table,
                            error=error)
