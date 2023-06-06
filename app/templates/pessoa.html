@@ -63,6 +63,29 @@
         </div>
       </div>
     </form>
+    <p class="lead fw-normal">Todos os colóquios cujo {{ x[1] }} participou.</p>
+  </div>
 
+  <div class="col-md-10 mx-auto">
+  <table class="table" id="Coloquios">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Título do colóquio</th>
+        <th scope="col">Data</th>
+        <th scope="col">Tipo</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for row in data_participacoes %}
+        <tr>
+          <td><a type="button" class="btn btn-secondary" href="{{ url_for('coloquios.coloquios.coloquio', id=row[0]) }}" >{{ row[0] }}</a></td>
+          <td  class="align-middle">{{ row[1] }}</td>
+          <td  class="align-middle">{{ row[2] }}</td>
+          <td  class="align-middle">{{ row[3] }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}

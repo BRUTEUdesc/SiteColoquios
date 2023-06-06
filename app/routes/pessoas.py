@@ -48,8 +48,28 @@ def pessoa(cpf):
     with con.cursor() as cur:
         cur.execute('SELECT * FROM coloquios.pessoa WHERE cpf = %s;', (cpf,))
         data_raw = cur.fetchone()
-        data_table = json.dumps(data_raw, default=default_serializer)
-        data_table = json.loads(data_table)
+        data = json.dumps(data_raw, default=default_serializer)
+        data = json.loads(data)
+
+        #Quero todas as colunas de apresentacao onde o id do participante é igual a ID
+        cur.execute(
+            'SELECT * FROM coloquios.apresentacao coloquio '
+            'JOIN coloquios.participante pa ON coloquio.id = pa.idcol '
+            'WHERE pa.idpar = %s',
+            (data_raw[0],)
+        )
+        data_participacoes = cur.fetchall()
+        updated_data_participacoes = [(row[0], row[1], row[2], 'Participante') for row in data_participacoes]
+
+        cur.execute(
+            'SELECT * FROM coloquios.apresentacao coloquio '
+            'JOIN coloquios.palestrante pa ON coloquio.id = pa.idcol '
+            'WHERE pa.idpal = %s',
+            (data_raw[0],)
+        )
+        new_data = cur.fetchall()
+        updated_data_participacoes += [(row[0], row[1], row[2], 'Apresentador') for row in new_data]
+
         idx = 0
         for i in range(0, 9):
             if data_raw[3] == cursos[i]:
@@ -76,4 +96,4 @@ def pessoa(cpf):
                 con.commit()
                 return redirect(url_for('coloquios.pessoas.index'))
 
-    return render_template('pessoa.html', form=form, x=data_table, dataRaw=data_raw, index=idx)
+    return render_template('pessoa.html', form=form, x=data, data_participacoes=updated_data_participacoes, dataRaw=data_raw, index=idx)
