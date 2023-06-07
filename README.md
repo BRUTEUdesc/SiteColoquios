@@ -12,8 +12,8 @@ Esse projeto está em desenvolvimento ativo, e ainda não deve ser usado em prod
 ## Índice
 
 - [Developer Setup](#developer-setup)
-- [Stack de desenvolvimento](#stack-de-desenvolvimento)
-- [Instalação](#instalação)
+- [Deployment](#deployment)
+- [Stack](#stack)
 - [Contato](#contato)
 - [Agradecimentos](#agradecimentos)
 
@@ -21,13 +21,14 @@ Esse projeto está em desenvolvimento ativo, e ainda não deve ser usado em prod
 
 Veja o guia de desenvolvimento [docs/dev_setup](docs/dev_setup.md).
 
-## Stack de desenvolvimento
+## Deployment
+
+Veja o guia de deployment [docs/deploy](docs/deploy.md).
+
+## Stack
 
 Site feito em Python utilizando Flask, WTForms, Psycopg2, Postgres, Bootstrap, Pytest entre outros.
 
-## Instalação
-
-Fazer um guia de instação no apache ou coisa do tipo?
 
 ## Contato
 
