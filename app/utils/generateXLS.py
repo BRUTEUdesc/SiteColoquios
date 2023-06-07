@@ -37,11 +37,11 @@ def generate(id):
             'right': 1
             , 'bold': True, 'italic': True})
         # Write headers
-        a = ['Nome', 'Data Nasc.', 'Tipo Doc.', 'Número do Documento', 'Endereço', 'Email', 'Nome da mãe',
+        a = ['Nome', 'Data Nasc. (dd/mm/yy)', 'Tipo Doc.', 'Número do Documento', 'Endereço', 'Email', 'Nome da mãe',
              'Tipo de Participação', 'CH', 'Extra 1', 'Extra 2', 'Extra 3']
         worksheet.write('A1', a[0], red_bold_italic)
         worksheet.write('B1', a[1], red_bold_italic)
-        worksheet.write('C1', a[2], bold_italic)
+        worksheet.write('C1', a[2], red_bold_italic)
         worksheet.write('D1', a[3], red_bold_italic)
         worksheet.write('E1', a[4], bold_italic)
         worksheet.write('F1', a[5], bold_italic)
@@ -54,10 +54,11 @@ def generate(id):
 
         text_format = workbook.add_format({'num_format': '@'})
         worksheet.set_column('A:K', None, text_format)
-
-        # Write data
+        index = 0
+        # Write data Participantes
         for i, row in enumerate(rows):
             row_num = i + 1
+            index = row_num
             formatted_date = row[3].strftime("%d/%m/%Y")
             cpf = row[2].replace('-', '')
             cpf = cpf.replace('.', '')
@@ -66,6 +67,31 @@ def generate(id):
             worksheet.write(row_num, 2, 'CPF', formatOne)
             worksheet.write(row_num, 3, cpf, formatOne)
             worksheet.write(row_num, 7, 'Participante', formatTwo)
+            worksheet.write(row_num, 8, '1', formatTwo)
+
+        cur.execute(
+            'SELECT nome, curso, cpf, datanasc  FROM coloquios.pessoa pessoa JOIN '
+            'coloquios.palestrante ba ON pessoa.id = ba.idpal JOIN coloquios.apresentacao b ON b.id = ba.idcol '
+            'WHERE b.id = %s '
+            'ORDER BY nome;',
+            (id,))
+        rows = cur.fetchall()
+        cur.execute('select * from coloquios.apresentacao where id = %s', (id,))
+        col = cur.fetchone()
+        con.commit()
+
+        index = index + 1
+        # Write data Apresentadores
+        for i, row in enumerate(rows):
+            row_num = i + 1 + index
+            formatted_date = row[3].strftime("%d/%m/%Y")
+            cpf = row[2].replace('-', '')
+            cpf = cpf.replace('.', '')
+            worksheet.write(row_num, 0, row[0], formatOne)
+            worksheet.write(row_num, 1, formatted_date, formatOne)
+            worksheet.write(row_num, 2, 'CPF', formatOne)
+            worksheet.write(row_num, 3, cpf, formatOne)
+            worksheet.write(row_num, 7, 'Apresentador', formatTwo)
             worksheet.write(row_num, 8, '1', formatTwo)
 
         # Set column widths
