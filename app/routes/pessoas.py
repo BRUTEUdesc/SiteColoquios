@@ -16,7 +16,7 @@ blueprint = Blueprint('pessoas', __name__, url_prefix='/pessoas')
 def index():
     con = get_db()
     with con.cursor() as cur:
-        cur.execute('SELECT * FROM coloquios.pessoa order by id;')
+        cur.execute('SELECT * FROM coloquios.pessoa order by nome;')
         con.commit()
         data_raw = cur.fetchall()
         data_table = json.dumps(data_raw, default=default_serializer)
@@ -51,11 +51,10 @@ def pessoa(cpf):
         data = json.dumps(data_raw, default=default_serializer)
         data = json.loads(data)
 
-        #Quero todas as colunas de apresentacao onde o id do participante é igual a ID
         cur.execute(
             'SELECT * FROM coloquios.apresentacao coloquio '
             'JOIN coloquios.participante pa ON coloquio.id = pa.idcol '
-            'WHERE pa.idpar = %s',
+            'WHERE pa.idpar = %s ORDER BY titulo',
             (data_raw[0],)
         )
         data_participacoes = cur.fetchall()
@@ -64,7 +63,7 @@ def pessoa(cpf):
         cur.execute(
             'SELECT * FROM coloquios.apresentacao coloquio '
             'JOIN coloquios.palestrante pa ON coloquio.id = pa.idcol '
-            'WHERE pa.idpal = %s',
+            'WHERE pa.idpal = %s ORDER BY titulo',
             (data_raw[0],)
         )
         new_data = cur.fetchall()

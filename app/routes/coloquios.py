@@ -36,7 +36,7 @@ def coloquio(id):
     con = get_db()
     with con.cursor() as cur:
         cur.execute(
-            'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
+            'select id, titulo, dataCol from coloquios.apresentacao where id = %s ORDER BY titulo;',
             (id,))
         con.commit()
         data_coloquio = cur.fetchall()
@@ -44,7 +44,7 @@ def coloquio(id):
         cur.execute(
             'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-            'WHERE b.id = %s;',
+            'WHERE b.id = %s ORDER BY nome;',
             id
         )
         con.commit()
@@ -151,7 +151,7 @@ def active(id):
             cur.execute(
                 'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
                 'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
-                'WHERE b.id = %s and pessoa.id = %s;',
+                'WHERE b.id = %s and pessoa.id = %s order by nome;',
                 (id, idpar)
             )
             con.commit()
