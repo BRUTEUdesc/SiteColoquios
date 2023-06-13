@@ -32,3 +32,18 @@ class TestColoquio:
         date_str = match.group(1)
         expected_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
 
+    def test_edit(self, admin_client, create_coloquio, app):
+        with app.app_context():
+            db = get_db()
+            with db.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE coloquios.apresentacao SET titulo = 'Korhal', datacol = '2000-12-12' "
+                    f"WHERE id = '{create_coloquio}';"
+                )
+                db.commit()
+
+        response = admin_client.get(f"coloquios/coloquios/{create_coloquio}", follow_redirects=True)
+
+        assert response.status_code == 200
+        assert b'Korhal' in response.data
+        assert b'2000-12-12' in response.data
