@@ -97,7 +97,7 @@ The application's web server is exposed on port 8000 and uses Gunicorn as the WS
 If the database is empty, create the necessary tables via the following commands:
   ```bash
   # Enter the web server container
-  docker exec -it sitecoloquios_web_1 bash
+  docker exec -it sitecoloquios-web-1 bash
   # Create the database
   flask db-create
   # Initialize the database
