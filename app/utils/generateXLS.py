@@ -15,7 +15,8 @@ def generate(id):
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s '
             'ORDER BY nome;',
-            (id,))
+            (id,)
+        )
         rows = cur.fetchall()
         cur.execute('select * from coloquios.apresentacao where id = %s', (id,))
         col = cur.fetchone()
@@ -74,7 +75,8 @@ def generate(id):
             'coloquios.palestrante ba ON pessoa.id = ba.idpal JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s '
             'ORDER BY nome;',
-            (id,))
+            (id,)
+        )
         rows = cur.fetchall()
         cur.execute('select * from coloquios.apresentacao where id = %s', (id,))
         col = cur.fetchone()
