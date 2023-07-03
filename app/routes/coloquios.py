@@ -37,7 +37,8 @@ def coloquio(id):
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s ORDER BY titulo;',
-            (id,))
+            (id,)
+        )
         con.commit()
         data_coloquio = cur.fetchall()
 
@@ -45,7 +46,7 @@ def coloquio(id):
             'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s ORDER BY nome;',
-            id
+            (id,)
         )
         con.commit()
         data_raw = cur.fetchall()
@@ -122,7 +123,7 @@ def active(id):
     with con.cursor() as cur:
         cur.execute(
             'select id, titulo, dataCol from coloquios.apresentacao where id = %s;',
-            id
+            (id,)
         )
         data_coloquio = cur.fetchall()
 
@@ -130,7 +131,7 @@ def active(id):
             'SELECT idpar, nome, datanasc, cpf, curso FROM coloquios.pessoa pessoa JOIN '
             'coloquios.participante ba ON pessoa.id = ba.idpar JOIN coloquios.apresentacao b ON b.id = ba.idcol '
             'WHERE b.id = %s;',
-            id
+            (id,)
         )
         con.commit()
         data_raw = cur.fetchall()
@@ -196,14 +197,15 @@ def apresentadores(id):
     with con.cursor() as cur:
         cur.execute(
             'select * from coloquios.apresentacao where id = %s;',
-            (id,))
+            (id,)
+        )
         data_coloquio = cur.fetchone()
 
         cur.execute(
             'select id, nome, datanasc, curso, cpf from coloquios.palestrante palestrante '
             'join coloquios.pessoa pessoa on palestrante.idpal = pessoa.id '
             'where pessoa.id = palestrante.idpal and idcol = %s;',
-            id
+            (id,)
         )
         con.commit()
         data_raw = cur.fetchall()

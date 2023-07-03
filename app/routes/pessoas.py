@@ -34,8 +34,10 @@ def index():
             elif cpf_search(cpf) is True:
                 flash('CPF já cadastrado')
             else:
-                cur.execute('INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
-                            (nome, date, curso, cpf))
+                cur.execute(
+                    'INSERT INTO coloquios.pessoa(nome, datanasc, curso, cpf) VALUES (%s, %s, %s, %s);',
+                    (nome, date, curso, cpf)
+                )
                 con.commit()
             return redirect(url_for('coloquios.pessoas.index'))
     return render_template('pessoas.html', dataTable=data_table, form=form)
