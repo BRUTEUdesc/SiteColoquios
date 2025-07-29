@@ -7,5 +7,6 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    restart: always
     volumes:
       - ./db/data:/var/lib/postgresql/data
