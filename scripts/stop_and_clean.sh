@@ -9,8 +9,8 @@ PRODUCTION_FILE="docker-compose.prod.yml"
 
 # Stop the web service and its dependencies
 echo "Stopping the $SERVICE_NAME service and its dependencies..."
-docker compose -f $COMPOSE_FILE -f $PRODUCTION_FILE stop $SERVICE_NAME
+docker-compose -f $COMPOSE_FILE -f $PRODUCTION_FILE stop $SERVICE_NAME
 
 # Remove all services
 echo "Removing the $SERVICE_NAME container and its dependencies..."
-docker compose -f $COMPOSE_FILE -f $PRODUCTION_FILE down
+docker-compose -f $COMPOSE_FILE -f $PRODUCTION_FILE down

@@ -6,12 +6,12 @@ PRODUCTION_FILE="docker-compose.prod.yml"
 
 # Pull the latest images
 echo "Pulling the latest images..."
-docker compose -f $COMPOSE_FILE -f $PRODUCTION_FILE pull
+docker-compose -f $COMPOSE_FILE -f $PRODUCTION_FILE pull
 
 # Build the services
 echo "Building the services..."
-docker compose -f $COMPOSE_FILE -f $PRODUCTION_FILE build
+docker-compose -f $COMPOSE_FILE -f $PRODUCTION_FILE build
 
 # Start all services
 echo "Starting all services..."
-docker compose -f $COMPOSE_FILE -f $PRODUCTION_FILE up -d
+docker-compose -f $COMPOSE_FILE -f $PRODUCTION_FILE up -d
