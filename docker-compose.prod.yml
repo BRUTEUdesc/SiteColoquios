@@ -12,3 +12,4 @@ services:
       FLASK_DEBUG: False
     depends_on:
       - postgres
+    restart: always
