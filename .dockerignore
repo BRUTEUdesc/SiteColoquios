@@ -14,3 +14,7 @@ db/data/
 
 # Env
 .env
+
+# Dumps de banco
+*.sql
+!db/schema.sql
