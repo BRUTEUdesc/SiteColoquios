@@ -380,3 +380,7 @@ pyrightconfig.json
 
 # Database Data
 db/data/
+
+# Dumps de banco (contem dados pessoais)
+*.sql
+!db/schema.sql
