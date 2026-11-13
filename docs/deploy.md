@@ -57,7 +57,7 @@ This application is containerized using Docker, with several Docker Compose file
 
 - **docker-compose.yml:** The main Docker Compose file defining the database service.
 
-- **docker-compose.override.yml:** Used exclusively for development, this file exposes the database port to the host machine.
+- **docker-compose.override.yml:** Used exclusively for development, this file exposes the database port on 127.0.0.1 only (loopback) of the host machine.
 
 - **docker-compose.prod.yml:** Specifically used for production, this file defines the web server service and links it to the database. The web server is exposed on port 8000.
 
