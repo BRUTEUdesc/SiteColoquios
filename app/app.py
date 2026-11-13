@@ -14,6 +14,9 @@ def create_app():
     app.config.from_mapping(
         HOME_ROUTE='coloquios.coloquios.index',
         SECRET_KEY=os.environ.get('SECRET_KEY'),
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+        SESSION_COOKIE_HTTPONLY=True,
         DB_NAME=os.environ.get('DB_NAME'),
         DB_HOST=os.environ.get('DB_HOST'),
         DB_PORT=os.environ.get('DB_PORT'),
